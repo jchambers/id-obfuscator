@@ -11,9 +11,23 @@ public class IntegerObfuscationPipelineTest {
     private final MultiplicativeInverseIntegerObfuscator multiplicativeInverseObfuscator =
             new MultiplicativeInverseIntegerObfuscator(873795);
 
+    @Test(expected = NullPointerException.class)
+    public void testIntegerObfuscationPipelineNullCodec() {
+        new IntegerObfuscationPipeline(null);
+    }
+
     @Test
     public void testObfuscateDeobfuscate() {
         final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(this.codec, this.xorObfuscator, this.multiplicativeInverseObfuscator);
+
+        for (final int id : new int[] {0, 1, 77, -77, Integer.MAX_VALUE, Integer.MIN_VALUE }) {
+            assertEquals(id, pipeline.deobfuscate(pipeline.obuscate(id)));
+        }
+    }
+
+    @Test
+    public void testObfuscateDeobfuscateCodecOnly() {
+        final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(this.codec);
 
         for (final int id : new int[] {0, 1, 77, -77, Integer.MAX_VALUE, Integer.MIN_VALUE }) {
             assertEquals(id, pipeline.deobfuscate(pipeline.obuscate(id)));
