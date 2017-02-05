@@ -25,12 +25,6 @@ This is (surprise!) exactly what ID Obfuscator offers; it allows you to apply fa
 Let's begin with an example, then break it down:
 
 ```java
-final BitRotationIntegerObfuscator rotate = new BitRotationIntegerObfuscator(17);
-final OffsetIntegerObfuscator offset = new OffsetIntegerObfuscator(785374208);
-final XorIntegerObfuscator xor = new XorIntegerObfuscator(4444266);
-final MultiplicativeInverseIntegerObfuscator inverse =
-        new MultiplicativeInverseIntegerObfuscator(5237459);
-
 final AlphabetCodec codec = new AlphabetCodec(new AlphabetBuilder()
         .includeUppercaseLatinLetters()
         .excludeVowels()
@@ -38,15 +32,18 @@ final AlphabetCodec codec = new AlphabetCodec(new AlphabetBuilder()
         .shuffleWithRandomSeed(95839275)
         .build());
 
+final BitRotationIntegerTransformer rotate = new BitRotationIntegerTransformer(17);
+final OffsetIntegerTransformer offset = new OffsetIntegerTransformer(785374208);
+final XorIntegerTransformer xor = new XorIntegerTransformer(4444266);
+final MultiplicativeInverseIntegerTransformer inverse =
+        new MultiplicativeInverseIntegerTransformer(5237459);
+
 final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(codec,
         rotate, offset, xor, inverse);
 
-System.out.println("| id | obfuscated id |");
-System.out.println("|----|---------------|");
-
 for (int id = 0; id < 10; id++) {
-    System.out.format("| %d  | %s |\n", id, pipeline.obuscate(id));
-    assert id == pipeline.deobfuscate(pipeline.obuscate(id));
+    final String obfuscatedId = pipeline.obuscate(id);
+    System.out.format("%d -> %s -> %d\n", id, obfuscatedId, pipeline.deobfuscate(obfuscatedId));
 }
 ```
 
@@ -65,11 +62,11 @@ The example produces the following output:
 | 8  | TTKZCWMJ |
 | 9  | RZMYYZRX |
 
-In the above example, there are three major pieces of the puzzle: obfuscators, codecs, and a pipeline. We'll discuss each in turn.
+In the above example, there are three major pieces of the puzzle: transformers, codecs, and a pipeline. We'll discuss each in turn.
 
 ### The pipeline
 
-The main point of interaction with ID Obfuscator is the `ObfuscationPipeline`. The pipeline combines a number of obfuscators and exactly one codec into a coherent tool for obfuscating and deobfuscating numbers. The type, number, and configuration of the obfuscators and the type and configuration codec all control the behavior of the pipeline. As an example, let's change the order of the obfuscators in the demo above to `offset, rotate, xor, inverse` (i.e. we swap the positions of `offset` and `rotate`). Now the output looks like this:
+The main point of interaction with ID Obfuscator is the `ObfuscationPipeline`. The pipeline combines a number of transformers and exactly one codec into a coherent tool for obfuscating and deobfuscating numbers. The type, number, and configuration of the transformers and the type and configuration codec all control the behavior of the pipeline. As an example, let's change the order of the transformers in the demo above to `offset, rotate, xor, inverse` (i.e. we swap the positions of `offset` and `rotate`). Now the output looks like this:
 
 | id | obfuscated id |
 |----|---------------|
@@ -84,39 +81,39 @@ The main point of interaction with ID Obfuscator is the `ObfuscationPipeline`. T
 | 8  | WFWMBTJ |
 | 9  | RLKJKQFP |
 
-This is, obviously, very different from the original output. We could achieve similar output changes by changing the value of the offset passed to the `OffsetIntegerObfuscator`, for example, or changing the random seed passed to the codec. This has two very important consequences:
+This is, obviously, very different from the original output. We could achieve similar output changes by changing the value of the offset passed to the `OffsetIntegerTransformer`, for example, or changing the random seed passed to the codec. This has two very important consequences:
 
-1. A malicious user needs to know the exact type, order, and configuration of the obfuscators and codec in your pipeline in order to turn obfuscated IDs into their original numerical representations.
-2. *You* need to know the exact type, order, and configuration of the obfuscators and codec in your pipeline in order to turn obfuscated IDs into their original numerical representations.
+1. A malicious user needs to know the exact type, order, and configuration of the transformers and codec in your pipeline in order to turn obfuscated IDs into their original numerical representations.
+2. *You* need to know the exact type, order, and configuration of the transformers and codec in your pipeline in order to turn obfuscated IDs into their original numerical representations.
 
 It's extremely important that you hold on to the "shape" and configuration of your pipeline once you start obfuscating IDs; if you lose it, you won't be able to deobfuscate your own IDs. Similarly, you *absolutely should not* randomly-generate pipeline parameters at runtime, because there's no guarantee they'll be the same from one run to the next. In other words, this is fine:
 
 ```java
-offset = new OffsetIntegerObfuscator(785374208);
+offset = new OffsetIntegerTransformer(785374208);
 ```
 
 …but this is an extremely bad idea:
 
 ```java
-offset = new OffsetIntegerObfuscator(new SecureRandom().nextInt());
+offset = new OffsetIntegerTransformer(new SecureRandom().nextInt());
 ```
 
-### Obfuscators
+### Transformers
 
-Obfuscators reversibly transform one number into another number. As a trivial example, an obfuscator might transform an a number by adding 27 to it, and then later reverse the transformation by subtracting 27. As shown in the example above, ID Obfuscator provides a number of obfuscators out of the box, and each is configurable (so your `OffsetIntegerObfuscator` may be very different from somebody else's).
+Transformers reversibly transform one number into another number. As a trivial example, a transformer might transform an a number by adding 27 to it, and then later reverse the transformation by subtracting 27. As shown in the example above, ID Obfuscator provides a number of transformers out of the box, and each is configurable (so your `OffsetIntegerTransformer` may be very different from somebody else's).
 
-Some of the obfuscators available out of the box include:
+Some of the transformers available out of the box include:
 
-- `BitRotationIntegerObfuscator` performs a [circular shift](https://en.wikipedia.org/wiki/Circular_shift) of configurable distance on the bits in a number
-- `MultiplicativeInverseIntegerObfuscator` obfuscates numbers by multiplying them by a "secret" you provide, then deobfuscates them by multiplying by the [multiplicative inverse](https://ericlippert.com/2013/11/12/math-from-scratch-part-thirteen-multiplicative-inverses/) of the secret
-- `OffsetIntegerObfuscator` obfuscates a number by adding a "secret" you provide, then deobfuscates by subtracting the secret
-- `XorIntegerObfuscator` obfuscates and deobfuscates numbers by applying a [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operations_in_C#Bitwise_XOR_.22.5E.22) operation with a "secret" you provide
+- `BitRotationIntegerTransformer` performs a [circular shift](https://en.wikipedia.org/wiki/Circular_shift) of configurable distance on the bits in a number
+- `MultiplicativeInverseIntegerTransformer` obfuscates numbers by multiplying them by a "secret" you provide, then deobfuscates them by multiplying by the [multiplicative inverse](https://ericlippert.com/2013/11/12/math-from-scratch-part-thirteen-multiplicative-inverses/) of the secret
+- `OffsetIntegerTransformer` obfuscates a number by adding a "secret" you provide, then deobfuscates by subtracting the secret
+- `XorIntegerTransformer` obfuscates and deobfuscates numbers by applying a [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operations_in_C#Bitwise_XOR_.22.5E.22) operation with a "secret" you provide
 
-You're free to add your own obfuscators, too!
+You're free to add your own transformers, too!
 
 ### Codecs
 
-A codec takes a (possibly obfuscated) number and represents it as a string. Later, it can transform that string back into the original number. Codecs may provide a measure of obfuscation in their own right; for example, it might just represent the number as a decimal string, but shuffle the digits. You could, in principle, have a pipeline that has no obfuscators and only has a codec.
+A codec takes a (possibly obfuscated) number and represents it as a string. Later, it can transform that string back into the original number. Codecs may provide a measure of obfuscation in their own right; for example, it might just represent the number as a decimal string, but shuffle the digits. You could, in principle, have a pipeline that has no transformers and only has a codec.
 
 ID Obfuscator comes with `AlphabetCodec`, which uses an alphabet you provide to represent numbers as strings, but you can certainly provide your own codec, too.
 

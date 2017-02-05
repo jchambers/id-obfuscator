@@ -4,20 +4,20 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class OffsetIntegerObfuscatorTest {
+public class OffsetIntegerTransformerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testOffsetIntegerObfuscatorZeroOffset() {
-        new OffsetIntegerObfuscator(0);
+        new OffsetIntegerTransformer(0);
     }
 
     @Test
-    public void testObfuscateDeobfuscate() {
+    public void testTransformReverseTransform() {
         for (final int offset : new int[] { 1, 17, -876, Integer.MAX_VALUE, Integer.MIN_VALUE}) {
-            final OffsetIntegerObfuscator obfuscator = new OffsetIntegerObfuscator(offset);
+            final OffsetIntegerTransformer transformer = new OffsetIntegerTransformer(offset);
 
             for (final int id : new int[] {0, 12, 284935728, -837, Integer.MAX_VALUE, Integer.MIN_VALUE }) {
-                assertEquals(id, obfuscator.deobfuscate(obfuscator.obfuscate(id)));
+                assertEquals(id, transformer.reverseTransform(transformer.transform(id)));
             }
         }
     }

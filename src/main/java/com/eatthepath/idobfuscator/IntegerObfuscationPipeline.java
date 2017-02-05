@@ -3,37 +3,38 @@ package com.eatthepath.idobfuscator;
 import java.util.Objects;
 
 /**
- * <p>An integer obfuscation pipeline combines any number of {@link IntegerObfuscator} instances and exactly one
+ * <p>An integer obfuscation pipeline combines any number of {@link IntegerTransformer} instances and exactly one
  * {@link IntegerCodec} to obfuscate and deobfuscate integers.</p>
  *
  * <p>The output of an obfuscation pipeline is determined by the kind, number, order, and configuration of its
- * obfuscators and by the kind and configuration of its codec. Changing the order of obfuscators, for example may
+ * transformers and by the kind and configuration of its codec. Changing the order of transformers, for example may
  * dramatically alter the output of the pipeline.</p>
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
 public class IntegerObfuscationPipeline {
-    private final IntegerObfuscator[] obfuscators;
+    private final IntegerTransformer[] transformers;
     private final IntegerCodec codec;
 
     /**
-     * Constructs a new obfuscation pipeline with the given codec and obfuscators.
+     * Constructs a new obfuscation pipeline with the given codec and transformers.
      *
      * @param codec the codec to be used to convert potentially-obfuscated integers to and from strings; must not be
      * {@code null}
-     * @param obfuscators any number of obfuscators to be applied to integers to be obfuscated or deobfuscated; may be
+     * @param transformers any number of transformers to be applied to integers to be obfuscated or deobfuscated; may be
      * empty or {@code null}
      */
-    public IntegerObfuscationPipeline(final IntegerCodec codec, final IntegerObfuscator... obfuscators) {
+    public IntegerObfuscationPipeline(final IntegerCodec codec, final IntegerTransformer... transformers) {
         Objects.requireNonNull(codec, "Codec must not be null");
 
-        this.obfuscators = obfuscators;
+        this.transformers = transformers;
         this.codec = codec;
     }
 
     /**
      * Reversibly obfuscates an integer. The pipeline obfuscates the given integer by applying each of this pipeline's
-     * obfuscators in sequence, and then converting the integer to a string with this pipeline's integer-to-string codec.
+     * transformers in sequence, and then converting the integer to a string with this pipeline's integer-to-string
+     * codec.
      *
      * @param i the integer to obfuscate
      *
@@ -42,8 +43,8 @@ public class IntegerObfuscationPipeline {
     public String obuscate(final int i) {
         int encodedInteger = i;
 
-        for (final IntegerObfuscator obfuscator : this.obfuscators) {
-            encodedInteger = obfuscator.obfuscate(encodedInteger);
+        for (final IntegerTransformer obfuscator : this.transformers) {
+            encodedInteger = obfuscator.transform(encodedInteger);
         }
 
         return this.codec.encodeIntegerAsString(encodedInteger);
@@ -51,7 +52,7 @@ public class IntegerObfuscationPipeline {
 
     /**
      * Deobfuscates an integer represented by the given string. The pipeline deobfuscates the integer by first decoding
-     * the string with this pipeline's codec, then applying each of the pipeline's obfuscators in reverse order,
+     * the string with this pipeline's codec, then applying each of the pipeline's transformers in reverse order,
      *
      * @param string the string to decode and deobfuscate
      *
@@ -60,8 +61,8 @@ public class IntegerObfuscationPipeline {
     public int deobfuscate(final String string) {
         int decodedInteger = this.codec.decodeStringAsInteger(string);
 
-        for (int i = this.obfuscators.length - 1; i >= 0; i--) {
-            decodedInteger = this.obfuscators[i].deobfuscate(decodedInteger);
+        for (int i = this.transformers.length - 1; i >= 0; i--) {
+            decodedInteger = this.transformers[i].reverseTransform(decodedInteger);
         }
 
         return decodedInteger;

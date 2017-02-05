@@ -1,11 +1,11 @@
 package com.eatthepath.idobfuscator;
 
-public class MultiplicativeInverseIntegerObfuscator implements IntegerObfuscator {
+public class MultiplicativeInverseIntegerTransformer implements IntegerTransformer {
 
     final int multiplier;
     final int inverse;
 
-    public MultiplicativeInverseIntegerObfuscator(final int multiplier) {
+    public MultiplicativeInverseIntegerTransformer(final int multiplier) {
         if (multiplier <= 0) {
             throw new IllegalArgumentException("Multiplier must be positive");
         } else if (multiplier % 2 == 0) {
@@ -17,12 +17,12 @@ public class MultiplicativeInverseIntegerObfuscator implements IntegerObfuscator
     }
 
     @Override
-    public int obfuscate(final int i) {
+    public int transform(final int i) {
         return i * this.multiplier;
     }
 
     @Override
-    public int deobfuscate(final int i) {
+    public int reverseTransform(final int i) {
         return i * this.inverse;
     }
 

@@ -12,11 +12,11 @@ public class ExampleApp {
                 .shuffleWithRandomSeed(95839275)
                 .build());
 
-        final BitRotationIntegerObfuscator rotate = new BitRotationIntegerObfuscator(17);
-        final OffsetIntegerObfuscator offset = new OffsetIntegerObfuscator(785374208);
-        final XorIntegerObfuscator xor = new XorIntegerObfuscator(4444266);
-        final MultiplicativeInverseIntegerObfuscator inverse =
-                new MultiplicativeInverseIntegerObfuscator(5237459);
+        final BitRotationIntegerTransformer rotate = new BitRotationIntegerTransformer(17);
+        final OffsetIntegerTransformer offset = new OffsetIntegerTransformer(785374208);
+        final XorIntegerTransformer xor = new XorIntegerTransformer(4444266);
+        final MultiplicativeInverseIntegerTransformer inverse =
+                new MultiplicativeInverseIntegerTransformer(5237459);
 
         final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(codec,
                 rotate, offset, xor, inverse);
