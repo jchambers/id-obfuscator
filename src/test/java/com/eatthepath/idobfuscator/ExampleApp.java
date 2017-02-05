@@ -21,7 +21,7 @@ public class ExampleApp {
         final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(codec,
                 rotate, offset, xor, inverse);
 
-        System.out.println("| ID | Obfuscated ID |");
+        System.out.println("| ID | Obfuscated ID  |");
         System.out.println("|----|----------------|");
 
         for (int id = 0; id < 10; id++) {
