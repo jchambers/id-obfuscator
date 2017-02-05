@@ -4,6 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * <p>Converts integers to strings using an arbitrary alphabet. As with a "normal" string representation of a number,
+ * each character in a string produced by this codec represents a numeric value, and the position of the character
+ * determines its place value; the radix is equal to the number of characters in the codec's alphabet.</p>
+ *
+ * <p>The order of characters in the codec's alphabet is significant, which allows callers to "shuffle" the alphabet
+ * to frustrate unwanted attempts at deobfuscation.</p>
+ *
+ * @author <a href="https://github.com/jchambers">Jon Chambers</a>
+ */
 public class AlphabetCodec implements IntegerCodec {
 
     private final char[] alphabet;
@@ -11,6 +21,22 @@ public class AlphabetCodec implements IntegerCodec {
 
     private final int placeValues[];
 
+    /**
+     * <p>Constructs a new alphabet codec that uses the given alphabet to encode and decode integers. Note that the
+     * order of characters in the given alphabet is significant; swapping the position of two characters in the given
+     * alphabet also swaps the values represented by those characters.</p>
+     *
+     * <p>Legal alphabets must meet certain criteria:</p>
+     *
+     * <ul>
+     *  <li>Alphabets must contain at least two characters</li>
+     *  <li>Alphabets must not contain any repeated characters</li>
+     * </ul>
+     *
+     * @param alphabet the alphabet to use when encoding or decoding integers
+     *
+     * @see com.eatthepath.idobfuscator.util.AlphabetBuilder
+     */
     public AlphabetCodec(final char... alphabet) {
         Objects.requireNonNull(alphabet, "Alphabet must not be null.");
 
@@ -46,6 +72,13 @@ public class AlphabetCodec implements IntegerCodec {
         }
     }
 
+    /**
+     * Encodes the given integer as a string using this codec's alphabet.
+     *
+     * @param i the integer to encode
+     *
+     * @return a string representation of the given integer
+     */
     @Override
     public String encodeIntegerAsString(final int i) {
         final String encodedString;
@@ -67,6 +100,17 @@ public class AlphabetCodec implements IntegerCodec {
         return encodedString;
     }
 
+    /**
+     * Decodes the given string as an integer.
+     *
+     * @param string the string to decode as an integer
+     *
+     * @return the integer represented by the given string
+     *
+     * @throws IllegalArgumentException if the given string is too long to represent a valid integer using this codec's
+     * alphabet
+     * @throws IllegalArgumentException if the given string contains characters not in this codec's alphabet
+     */
     @Override
     public int decodeStringAsInteger(final String string) {
         if (string.length() > this.placeValues.length) {
