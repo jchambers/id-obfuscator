@@ -16,6 +16,11 @@ public class MultiplicativeInverseIntegerObfuscatorTest {
         new MultiplicativeInverseIntegerObfuscator(-77);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testMultiplicativeInverseIntegerObfuscatorEvenMultiplier() {
+        new MultiplicativeInverseIntegerObfuscator(862983572);
+    }
+
     @Test
     public void testObfuscateDeobfuscate() {
         final int[] multipliers = { 77, Integer.MAX_VALUE };

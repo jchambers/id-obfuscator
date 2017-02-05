@@ -8,16 +8,20 @@ public class MultiplicativeInverseIntegerObfuscator implements IntegerObfuscator
     public MultiplicativeInverseIntegerObfuscator(final int multiplier) {
         if (multiplier <= 0) {
             throw new IllegalArgumentException("Multiplier must be positive");
+        } else if (multiplier % 2 == 0) {
+            throw new IllegalArgumentException("Multiplier must not be divisible by 2");
         }
 
         this.multiplier = multiplier;
         this.inverse = this.getMultiplicativeInverse(multiplier);
     }
 
+    @Override
     public int obfuscate(final int i) {
         return i * this.multiplier;
     }
 
+    @Override
     public int deobfuscate(final int i) {
         return i * this.inverse;
     }
