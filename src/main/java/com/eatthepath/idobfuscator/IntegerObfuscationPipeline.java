@@ -3,8 +3,12 @@ package com.eatthepath.idobfuscator;
 import java.util.Objects;
 
 /**
- * An integer obfuscation pipeline combines any number of {@link IntegerObfuscator} instances and exactly one
- * {@link IntegerCodec} to obfuscate and deobfuscate integers.
+ * <p>An integer obfuscation pipeline combines any number of {@link IntegerObfuscator} instances and exactly one
+ * {@link IntegerCodec} to obfuscate and deobfuscate integers.</p>
+ *
+ * <p>The output of an obfuscation pipeline is determined by the kind, number, order, and configuration of its
+ * obfuscators and by the kind and configuration of its codec. Changing the order of obfuscators, for example may
+ * dramatically alter the output of the pipeline.</p>
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
