@@ -40,13 +40,18 @@ public class AlphabetCodecTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDecodeUnexpectedCharacter() {
-        new AlphabetCodec('a', 'b', 'c', 'd').decodeStringAsInteger("This string contains characters outside of the expected alphabet.");
+        new AlphabetCodec('a', 'b', 'c', 'd').decodeStringAsInteger("x");
     }
 
-    @Test
-    public void testExponentiate() {
-        assertEquals(1, AlphabetCodec.exponentiate(17, 0));
-        assertEquals(17, AlphabetCodec.exponentiate(17, 1));
-        assertEquals(289, AlphabetCodec.exponentiate(17, 2));
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecodeLongString() {
+        final char[] alphabet = new AlphabetBuilder()
+                .includeUppercaseLatinLetters()
+                .includeLowercaseLatinLetters()
+                .includeAdditionalCharacters(' ', ',', '.')
+                .build();
+
+        new AlphabetCodec(alphabet).decodeStringAsInteger(
+                "Even though this string contains legal characters, it is too long to represent a valid integer.");
     }
 }

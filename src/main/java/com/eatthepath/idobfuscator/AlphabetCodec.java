@@ -9,6 +9,8 @@ public class AlphabetCodec implements IntegerCodec {
     private final char[] alphabet;
     private final Map<Character, Integer> charactersToValues = new HashMap<>();
 
+    private final int placeValues[];
+
     public AlphabetCodec(final char... alphabet) {
         Objects.requireNonNull(alphabet, "Alphabet must not be null.");
 
@@ -28,6 +30,19 @@ public class AlphabetCodec implements IntegerCodec {
 
         for (int i = 0; i < alphabet.length; i++) {
             this.charactersToValues.put(alphabet[i], i);
+        }
+
+        // Based on the size of the alphabet and the width of an integer, we can determine the maximum length of a
+        // string needed to represent any integer value with the given alphabet. With that, we can both perform some
+        // low-cost error-checking when we try to decode strings and also precalculate place values to avoid repeating
+        // work when decoding.
+        final int maxStringLength = (int) Math.ceil(Math.log(Math.pow(2, Integer.SIZE)) / Math.log(this.alphabet.length));
+
+        this.placeValues = new int[maxStringLength];
+        this.placeValues[0] = 1;
+
+        for (int i = 1; i < maxStringLength; i++) {
+            this.placeValues[i] = this.placeValues[i - 1] * this.alphabet.length;
         }
     }
 
@@ -54,6 +69,10 @@ public class AlphabetCodec implements IntegerCodec {
 
     @Override
     public int decodeStringAsInteger(final String string) {
+        if (string.length() > this.placeValues.length) {
+            throw new IllegalArgumentException(String.format("String \"%s\" is too long to represent a valid integer.", string));
+        }
+
         final char[] chars = string.toCharArray();
         long decoded = 0;
         int exponent = chars.length - 1;
@@ -61,7 +80,7 @@ public class AlphabetCodec implements IntegerCodec {
         for (final char c : chars) {
             try {
                 final int x = this.charactersToValues.get(c);
-                decoded += x * exponentiate(this.alphabet.length, exponent--);
+                decoded += x * this.placeValues[exponent--];
             } catch (final NullPointerException e) {
                 throw new IllegalArgumentException(String.format("Could not decode \"%s\"; character '%s' not in codec alphabet.",
                         string, c));
@@ -69,15 +88,5 @@ public class AlphabetCodec implements IntegerCodec {
         }
 
         return (int) decoded;
-    }
-
-    static long exponentiate(final int x, final int exponent) {
-        long exponentiated = 1;
-
-        for (int i = 0; i < exponent; i++) {
-            exponentiated *= x;
-        }
-
-        return exponentiated;
     }
 }
