@@ -1,0 +1,17 @@
+# Maven output directories
+target
+
+# macOS detritus
+.DS_Store
+
+# Eclipse project files
+.classpath
+.project
+.settings
+
+# Things that might appear in the gh-pages branch
+_site
+
+# IntelliJ project files
+*.iml
+.idea/
