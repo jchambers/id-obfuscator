@@ -21,6 +21,11 @@ public class AlphabetCodecTest {
         new AlphabetCodec('a');
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testAlphabetCodecRepeatedCharacters() {
+        new AlphabetCodec('a', 'b', 'c', 'd', 'c');
+    }
+
     @Test
     public void testEncodeDecodeInteger() {
         final AlphabetCodec codec = new AlphabetCodec('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',

@@ -16,6 +16,14 @@ public class AlphabetCodec implements IntegerCodec {
             throw new IllegalArgumentException("Alphabet must contain at least two characters");
         }
 
+        for (int i = 0; i < alphabet.length; i++) {
+            for (int j = i + 1; j < alphabet.length; j++) {
+                if (alphabet[i] == alphabet[j]) {
+                    throw new IllegalArgumentException(String.format("Alphabet contains character '%s' more than once", alphabet[i]));
+                }
+            }
+        }
+
         this.alphabet = alphabet;
 
         for (int i = 0; i < alphabet.length; i++) {
