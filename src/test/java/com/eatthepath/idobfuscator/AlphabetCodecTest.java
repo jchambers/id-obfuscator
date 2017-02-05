@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.eatthepath.idobfuscator.util.AlphabetBuilder;
+
 public class AlphabetCodecTest {
 
     @Test(expected = NullPointerException.class)
@@ -28,8 +30,7 @@ public class AlphabetCodecTest {
 
     @Test
     public void testEncodeDecodeInteger() {
-        final AlphabetCodec codec = new AlphabetCodec('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-                'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
+        final AlphabetCodec codec = new AlphabetCodec(new AlphabetBuilder().includeLowercaseLatinLetters().build());
         final int[] ids = { 0, 1, 2, 7, 86753, Integer.MAX_VALUE, -77, Integer.MIN_VALUE };
 
         for (final int id : ids) {
