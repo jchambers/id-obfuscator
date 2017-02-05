@@ -41,9 +41,12 @@ final MultiplicativeInverseIntegerTransformer inverse =
 final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(codec,
         rotate, offset, xor, inverse);
 
+System.out.println("| ID | Obfuscated ID |");
+System.out.println("|----|----------------|");
+
 for (int id = 0; id < 10; id++) {
-    final String obfuscatedId = pipeline.obuscate(id);
-    System.out.format("%d -> %s -> %d\n", id, obfuscatedId, pipeline.deobfuscate(obfuscatedId));
+    System.out.format("| %d  | %s |\n", id, pipeline.obuscate(id));
+    assert id == pipeline.deobfuscate(pipeline.obuscate(id));
 }
 ```
 
