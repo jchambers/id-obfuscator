@@ -51,8 +51,13 @@ public class AlphabetCodec implements IntegerCodec {
         int exponent = chars.length - 1;
 
         for (final char c : chars) {
-            final int x = this.charactersToValues.get(c);
-            decoded += x * exponentiate(this.alphabet.length, exponent--);
+            try {
+                final int x = this.charactersToValues.get(c);
+                decoded += x * exponentiate(this.alphabet.length, exponent--);
+            } catch (final NullPointerException e) {
+                throw new IllegalArgumentException(String.format("Could not decode \"%s\"; character '%s' not in codec alphabet.",
+                        string, c));
+            }
         }
 
         return (int) decoded;

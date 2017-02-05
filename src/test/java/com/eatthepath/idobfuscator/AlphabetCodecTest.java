@@ -32,6 +32,11 @@ public class AlphabetCodecTest {
         }
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecodeUnexpectedCharacter() {
+        new AlphabetCodec('a', 'b', 'c', 'd').decodeStringAsInteger("This string contains characters outside of the expected alphabet.");
+    }
+
     @Test
     public void testExponentiate() {
         assertEquals(1, AlphabetCodec.exponentiate(17, 0));
