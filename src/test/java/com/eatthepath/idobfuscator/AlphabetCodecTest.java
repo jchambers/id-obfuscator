@@ -31,10 +31,18 @@ public class AlphabetCodecTest {
     @Test
     public void testEncodeDecodeInteger() {
         final AlphabetCodec codec = new AlphabetCodec(new AlphabetBuilder().includeLowercaseLatinLetters().build());
-        final int[] ids = { 0, 1, 2, 7, 86753, Integer.MAX_VALUE, -77, Integer.MIN_VALUE };
 
-        for (final int id : ids) {
+        for (final int id : new int[] { 0, 1, 2, 7, 86753, Integer.MAX_VALUE, -77, Integer.MIN_VALUE }) {
             assertEquals(id, codec.decodeStringAsInteger(codec.encodeIntegerAsString(id)));
+        }
+    }
+
+    @Test
+    public void testEncodeDecodeLong() {
+        final AlphabetCodec codec = new AlphabetCodec(new AlphabetBuilder().includeDigits().build());
+
+        for (final long id : new long[] { 0, 1, 2, 7, 86753, Long.MAX_VALUE, -77, Long.MIN_VALUE }) {
+            assertEquals(id, codec.decodeStringAsLong(codec.encodeLongAsString(id)));
         }
     }
 
