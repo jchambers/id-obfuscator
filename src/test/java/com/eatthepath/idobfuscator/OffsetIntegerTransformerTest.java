@@ -17,7 +17,7 @@ public class OffsetIntegerTransformerTest {
             final OffsetIntegerTransformer transformer = new OffsetIntegerTransformer(offset);
 
             for (final int id : new int[] {0, 12, 284935728, -837, Integer.MAX_VALUE, Integer.MIN_VALUE }) {
-                assertEquals(id, transformer.reverseTransform(transformer.transform(id)));
+                assertEquals(id, transformer.reverseTransformInteger(transformer.transformInteger(id)));
             }
         }
     }

@@ -12,21 +12,22 @@ public interface IntegerTransformer {
 
     /**
      * Reversibly transforms the given integer it into another integer. Transformations must be reversible, and it must
-     * be true for all values of {@code i} that {@code i == reverseTransform(transform(i))}.
+     * be true for all values of {@code i} that {@code i == reverseTransformInteger(transformInteger(i))}.
      *
      * @param i the integer to transform
      *
      * @return the transformed integer
      */
-    int transform(int i);
+    int transformInteger(int i);
 
     /**
-     * Reverses the transformation applied by the {@link IntegerTransformer#transform(int)} method. Transformations must
-     * be reversible, and it must be true for all values of {@code i} that {@code i == reverseTransform(transform(i))}.
+     * Reverses the transformation applied by the {@link IntegerTransformer#transformInteger(int)} method.
+     * Transformations must be reversible, and it must be true for all values of {@code i} that
+     * {@code i == reverseTransformInteger(transformInteger(i))}.
      *
      * @param i the transformed integer for which to reverse transformation
      *
      * @return the original integer
      */
-    int reverseTransform(int i);
+    int reverseTransformInteger(int i);
 }

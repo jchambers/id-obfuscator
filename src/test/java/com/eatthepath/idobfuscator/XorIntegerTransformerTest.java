@@ -12,7 +12,7 @@ public class XorIntegerTransformerTest {
             final XorIntegerTransformer transformer = new XorIntegerTransformer(mask);
 
             for (final int id : new int[] { 0, 1, -7, 77, Integer.MAX_VALUE, Integer.MIN_VALUE }) {
-                assertEquals(id, transformer.reverseTransform(transformer.reverseTransform(id)));
+                assertEquals(id, transformer.reverseTransformInteger(transformer.reverseTransformInteger(id)));
             }
         }
     }

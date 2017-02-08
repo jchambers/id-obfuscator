@@ -31,7 +31,7 @@ public class OffsetIntegerTransformer implements IntegerTransformer {
      * @return the transformed integer
      */
     @Override
-    public int transform(final int i) {
+    public int transformInteger(final int i) {
         return i + this.offset;
     }
 
@@ -43,7 +43,7 @@ public class OffsetIntegerTransformer implements IntegerTransformer {
      * @return the original integer
      */
     @Override
-    public int reverseTransform(final int i) {
+    public int reverseTransformInteger(final int i) {
         return i - this.offset;
     }
 }

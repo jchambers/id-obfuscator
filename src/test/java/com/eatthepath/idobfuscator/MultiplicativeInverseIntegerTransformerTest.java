@@ -31,7 +31,7 @@ public class MultiplicativeInverseIntegerTransformerTest {
                 final MultiplicativeInverseIntegerTransformer transformer =
                         new MultiplicativeInverseIntegerTransformer(multiplier);
 
-                assertEquals(id, transformer.reverseTransform(transformer.transform(id)));
+                assertEquals(id, transformer.reverseTransformInteger(transformer.transformInteger(id)));
             }
         }
     }

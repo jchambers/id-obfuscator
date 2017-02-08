@@ -31,7 +31,7 @@ public class BitRotationIntegerTransformer implements IntegerTransformer {
      * @return the rotated integer
      */
     @Override
-    public int transform(final int i) {
+    public int transformInteger(final int i) {
         return (i << this.distance) | (i >>> (Integer.SIZE - this.distance));
     }
 
@@ -43,7 +43,7 @@ public class BitRotationIntegerTransformer implements IntegerTransformer {
      * @return the original integer
      */
     @Override
-    public int reverseTransform(final int i) {
+    public int reverseTransformInteger(final int i) {
         return (i >>> this.distance) | (i << (Integer.SIZE - this.distance));
     }
 }

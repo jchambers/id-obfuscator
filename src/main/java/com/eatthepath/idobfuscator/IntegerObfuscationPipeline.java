@@ -44,7 +44,7 @@ public class IntegerObfuscationPipeline {
         int encodedInteger = i;
 
         for (final IntegerTransformer obfuscator : this.transformers) {
-            encodedInteger = obfuscator.transform(encodedInteger);
+            encodedInteger = obfuscator.transformInteger(encodedInteger);
         }
 
         return this.codec.encodeIntegerAsString(encodedInteger);
@@ -62,7 +62,7 @@ public class IntegerObfuscationPipeline {
         int decodedInteger = this.codec.decodeStringAsInteger(string);
 
         for (int i = this.transformers.length - 1; i >= 0; i--) {
-            decodedInteger = this.transformers[i].reverseTransform(decodedInteger);
+            decodedInteger = this.transformers[i].reverseTransformInteger(decodedInteger);
         }
 
         return decodedInteger;

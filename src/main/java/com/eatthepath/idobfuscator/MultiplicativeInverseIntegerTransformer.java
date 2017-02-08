@@ -37,7 +37,7 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
      * @return the integer multiplied by this transformer's "secret" multiplier
      */
     @Override
-    public int transform(final int i) {
+    public int transformInteger(final int i) {
         return i * this.multiplier;
     }
 
@@ -50,7 +50,7 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
      * @return the original integer
      */
     @Override
-    public int reverseTransform(final int i) {
+    public int reverseTransformInteger(final int i) {
         return i * this.inverse;
     }
 
