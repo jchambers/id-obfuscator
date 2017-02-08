@@ -40,7 +40,7 @@ public class IntegerObfuscationPipeline {
      *
      * @return a string representation of the obfuscated integer
      */
-    public String obuscate(final int i) {
+    public String obfuscate(final int i) {
         int encodedInteger = i;
 
         for (final IntegerTransformer obfuscator : this.transformers) {

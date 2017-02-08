@@ -45,8 +45,8 @@ System.out.println("| ID | Obfuscated ID  |");
 System.out.println("|----|----------------|");
 
 for (int id = 0; id < 10; id++) {
-    System.out.format("| %d  | %s |\n", id, pipeline.obuscate(id));
-    assert id == pipeline.deobfuscate(pipeline.obuscate(id));
+    System.out.format("| %d  | %s |\n", id, pipeline.obfuscate(id));
+    assert id == pipeline.deobfuscate(pipeline.obfuscate(id));
 }
 ```
 

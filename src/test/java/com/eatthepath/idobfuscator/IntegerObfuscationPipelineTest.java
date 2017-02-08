@@ -21,7 +21,7 @@ public class IntegerObfuscationPipelineTest {
         final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(this.codec, this.xorObfuscator, this.multiplicativeInverseObfuscator);
 
         for (final int id : new int[] {0, 1, 77, -77, Integer.MAX_VALUE, Integer.MIN_VALUE }) {
-            assertEquals(id, pipeline.deobfuscate(pipeline.obuscate(id)));
+            assertEquals(id, pipeline.deobfuscate(pipeline.obfuscate(id)));
         }
     }
 
@@ -30,7 +30,7 @@ public class IntegerObfuscationPipelineTest {
         final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(this.codec);
 
         for (final int id : new int[] {0, 1, 77, -77, Integer.MAX_VALUE, Integer.MIN_VALUE }) {
-            assertEquals(id, pipeline.deobfuscate(pipeline.obuscate(id)));
+            assertEquals(id, pipeline.deobfuscate(pipeline.obfuscate(id)));
         }
     }
 }
