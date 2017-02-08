@@ -86,12 +86,12 @@ public class AlphabetCodec implements IntegerCodec {
         if (i == 0) {
             encodedString = new String(new char[] { this.alphabet[0] });
         } else {
-            long workingCopy = i & 0xffffffffL;
+            int workingCopy = i;
             final char[] encodedCharacters = new char[this.placeValues.length];
 
             for (int j = encodedCharacters.length - 1; j >= 0; j--) {
-                encodedCharacters[j] = this.alphabet[(int) (workingCopy % this.alphabet.length)];
-                workingCopy /= this.alphabet.length;
+                encodedCharacters[j] = this.alphabet[Integer.remainderUnsigned(workingCopy, this.alphabet.length)];
+                workingCopy = Integer.divideUnsigned(workingCopy, this.alphabet.length);
             }
 
             encodedString = new String(encodedCharacters);
