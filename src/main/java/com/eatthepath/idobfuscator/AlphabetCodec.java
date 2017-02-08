@@ -87,14 +87,14 @@ public class AlphabetCodec implements IntegerCodec {
             encodedString = new String(new char[] { this.alphabet[0] });
         } else {
             long workingCopy = i & 0xffffffffL;
-            final StringBuilder builder = new StringBuilder();
+            final char[] encodedCharacters = new char[this.placeValues.length];
 
-            while (workingCopy != 0) {
-                builder.insert(0, this.alphabet[(int) (workingCopy % this.alphabet.length)]);
+            for (int j = encodedCharacters.length - 1; j >= 0; j--) {
+                encodedCharacters[j] = this.alphabet[(int) (workingCopy % this.alphabet.length)];
                 workingCopy /= this.alphabet.length;
             }
 
-            encodedString = builder.toString();
+            encodedString = new String(encodedCharacters);
         }
 
         return encodedString;
