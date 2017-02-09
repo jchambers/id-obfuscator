@@ -52,7 +52,7 @@ public class IntegerObfuscationPipeline {
 
     /**
      * Deobfuscates an integer represented by the given string. The pipeline deobfuscates the integer by first decoding
-     * the string with this pipeline's codec, then applying each of the pipeline's transformers in reverse order,
+     * the string with this pipeline's codec, then applying each of the pipeline's transformers in reverse order.
      *
      * @param string the string to decode and deobfuscate
      *
