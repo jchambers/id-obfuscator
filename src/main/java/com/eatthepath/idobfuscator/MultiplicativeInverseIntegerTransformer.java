@@ -1,5 +1,7 @@
 package com.eatthepath.idobfuscator;
 
+import java.math.BigInteger;
+
 /**
  * Transforms integers by multiplying them by a "secret" multiplier and reverses transformations by multiplying by the
  * secret's multiplicative inverse.
@@ -26,7 +28,7 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
         }
 
         this.multiplier = multiplier;
-        this.inverse = this.getMultiplicativeInverse(multiplier);
+        this.inverse = (int) this.getMultiplicativeInverse(multiplier, Integer.SIZE);
     }
 
     /**
@@ -54,33 +56,33 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
         return i * this.inverse;
     }
 
-    private int getMultiplicativeInverse(final int multiplier) {
-        long s = 0, previousS = 1;
-        long t = 1, previousT = 0;
-        long r = multiplier, previousR = (1L << Integer.SIZE);
+    private long getMultiplicativeInverse(final long multiplier, final int nBits) {
+        BigInteger s = BigInteger.ZERO, previousS = BigInteger.ONE;
+        BigInteger t = BigInteger.ONE, previousT = BigInteger.ZERO;
+        BigInteger r = BigInteger.valueOf(multiplier), previousR = BigInteger.ONE.shiftLeft(nBits);
 
-        while (r != 0) {
-            final long q = previousR / r;
+        while (!BigInteger.ZERO.equals(r)) {
+            final BigInteger q = previousR.divide(r);
 
             {
-                final long tempR = r;
-                r = previousR - (q * r);
+                final BigInteger tempR = r;
+                r = previousR.subtract(q.multiply(r));
                 previousR = tempR;
             }
 
             {
-                final long tempS = s;
-                s = previousS - (q * s);
+                final BigInteger tempS = s;
+                s = previousS.subtract(q.multiply(s));
                 previousS = tempS;
             }
 
             {
-                final long tempT = t;
-                t = previousT - (q * t);
+                final BigInteger tempT = t;
+                t = previousT.subtract(q.multiply(t));
                 previousT = tempT;
             }
         }
 
-        return (int) previousT;
+        return previousT.longValue();
     }
 }
