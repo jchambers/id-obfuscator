@@ -1,12 +1,14 @@
 package com.eatthepath.idobfuscator;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-
 import com.eatthepath.idobfuscator.util.AlphabetBuilder;
 
-public class AlphabetCodecTest {
+public class AlphabetCodecTest extends IntegerCodecTest {
+
+    @Override
+    protected IntegerCodec[] getCodecs() {
+        return new AlphabetCodec[] {  new AlphabetCodec(new AlphabetBuilder().includeLowercaseLatinLetters().build()) };
+    }
 
     @Test(expected = NullPointerException.class)
     public void testAlphabetCodecNullAlphabet() {
@@ -28,19 +30,9 @@ public class AlphabetCodecTest {
         new AlphabetCodec('a', 'b', 'c', 'd', 'c');
     }
 
-    @Test
-    public void testEncodeDecodeInteger() {
-        final AlphabetCodec codec = new AlphabetCodec(new AlphabetBuilder().includeLowercaseLatinLetters().build());
-        final int[] ids = { 0, 1, 2, 7, 86753, Integer.MAX_VALUE, -77, Integer.MIN_VALUE };
-
-        for (final int id : ids) {
-            assertEquals(id, codec.decodeStringAsInteger(codec.encodeIntegerAsString(id)));
-        }
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void testDecodeUnexpectedCharacter() {
-        new AlphabetCodec('a', 'b', 'c', 'd').decodeStringAsInteger("x");
+        new AlphabetCodec('a', 'b', 'c', 'd').decodeStringAsInteger("x", Integer.SIZE);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -52,6 +44,6 @@ public class AlphabetCodecTest {
                 .build();
 
         new AlphabetCodec(alphabet).decodeStringAsInteger(
-                "Even though this string contains legal characters, it is too long to represent a valid integer.");
+                "Even though this string contains legal characters, it is too long to represent a valid integer.", Integer.SIZE);
     }
 }

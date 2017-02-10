@@ -2,10 +2,19 @@ package com.eatthepath.idobfuscator.util;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.eatthepath.idobfuscator.util.BitwiseOperationUtil;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+@RunWith(JUnitParamsRunner.class)
 public class BitwiseOperationUtilTest {
 
     @Test
@@ -76,16 +85,46 @@ public class BitwiseOperationUtilTest {
     }
 
     @Test
-    public void testAssertValueFitsWithinSize() {
+    @Parameters(method = "getParametersForAssertValueFitsWithinSize")
+    public void testAssertValueFitsWithinSize(final long value, final int nBits) {
         // We're happy here as long as nothing explodes
-        BitwiseOperationUtil.assertValueFitsWithinSize(Byte.MIN_VALUE, Byte.SIZE);
-        BitwiseOperationUtil.assertValueFitsWithinSize(Byte.MAX_VALUE, Byte.SIZE);
-        BitwiseOperationUtil.assertValueFitsWithinSize(Short.MIN_VALUE, Short.SIZE);
-        BitwiseOperationUtil.assertValueFitsWithinSize(Short.MAX_VALUE, Short.SIZE);
-        BitwiseOperationUtil.assertValueFitsWithinSize(Integer.MIN_VALUE, Integer.SIZE);
-        BitwiseOperationUtil.assertValueFitsWithinSize(Integer.MAX_VALUE, Integer.SIZE);
-        BitwiseOperationUtil.assertValueFitsWithinSize(Long.MIN_VALUE, Long.SIZE);
-        BitwiseOperationUtil.assertValueFitsWithinSize(Long.MAX_VALUE, Long.SIZE);
+        BitwiseOperationUtil.assertValueFitsWithinSize(value, nBits);
+    }
+
+    @SuppressWarnings("unused")
+    private List<List<?>> getParametersForAssertValueFitsWithinSize() {
+        final List<List<?>> parameters = new ArrayList<>();
+
+        parameters.add(Arrays.asList(Byte.MIN_VALUE, Byte.SIZE));
+        parameters.add(Arrays.asList(Byte.MAX_VALUE, Byte.SIZE));
+        parameters.add(Arrays.asList(Short.MIN_VALUE, Short.SIZE));
+        parameters.add(Arrays.asList(Short.MAX_VALUE, Short.SIZE));
+        parameters.add(Arrays.asList(Integer.MIN_VALUE, Integer.SIZE));
+        parameters.add(Arrays.asList(Integer.MAX_VALUE, Integer.SIZE));
+        parameters.add(Arrays.asList(Long.MIN_VALUE, Long.SIZE));
+        parameters.add(Arrays.asList(Long.MAX_VALUE, Long.SIZE));
+
+        return parameters;
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Parameters(method = "getParametersForAssertValueFitsWithinSizeTooWide")
+    public void testAssertValueFitsWithinSizeTooWide(final long value, final int nBits) {
+        BitwiseOperationUtil.assertValueFitsWithinSize(value, nBits);
+    }
+
+    @SuppressWarnings("unused")
+    private List<List<?>> getParametersForAssertValueFitsWithinSizeTooWide() {
+        final List<List<?>> parameters = new ArrayList<>();
+
+        parameters.add(Arrays.asList(Byte.MIN_VALUE - 1L, Byte.SIZE));
+        parameters.add(Arrays.asList(Byte.MAX_VALUE + 1L, Byte.SIZE));
+        parameters.add(Arrays.asList(Short.MIN_VALUE - 1L, Short.SIZE));
+        parameters.add(Arrays.asList(Short.MAX_VALUE + 1L, Short.SIZE));
+        parameters.add(Arrays.asList(Integer.MIN_VALUE - 1L, Integer.SIZE));
+        parameters.add(Arrays.asList(Integer.MAX_VALUE + 1L, Integer.SIZE));
+
+        return parameters;
     }
 
     @Test(expected = IllegalArgumentException.class)

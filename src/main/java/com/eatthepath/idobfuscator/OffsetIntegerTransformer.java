@@ -1,5 +1,7 @@
 package com.eatthepath.idobfuscator;
 
+import com.eatthepath.idobfuscator.util.BitwiseOperationUtil;
+
 /**
  * Transforms integers by adding a given offset, and reverses transformations by subtracting that offset.
  *
@@ -7,19 +9,15 @@ package com.eatthepath.idobfuscator;
  */
 public class OffsetIntegerTransformer implements IntegerTransformer {
 
-    private final int offset;
+    private final long offset;
 
     /**
-     * Constructs a new offset transformer with the given offset. Offsets must be non-zero (otherwise the transformation
-     * would be a no-op).
+     * Constructs a new offset transformer with the given offset. Offsets should be non-zero (otherwise the
+     * transformation would be a no-op), but zero offsets are technically allowed.
      *
-     * @param offset the offset to apply when transforming numbers; must be non-zero
+     * @param offset the offset to apply when transforming numbers
      */
-    public OffsetIntegerTransformer(final int offset) {
-        if (offset == 0) {
-            throw new IllegalArgumentException("Offset must be non-zero");
-        }
-
+    public OffsetIntegerTransformer(final long offset) {
         this.offset = offset;
     }
 
@@ -31,8 +29,9 @@ public class OffsetIntegerTransformer implements IntegerTransformer {
      * @return the transformed integer
      */
     @Override
-    public int transformInteger(final int i) {
-        return i + this.offset;
+    public long transformInteger(final long i, final int nBits) {
+        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
+        return BitwiseOperationUtil.signExtendLowestBitsToLong(i + this.offset, nBits);
     }
 
     /**
@@ -43,7 +42,13 @@ public class OffsetIntegerTransformer implements IntegerTransformer {
      * @return the original integer
      */
     @Override
-    public int reverseTransformInteger(final int i) {
-        return i - this.offset;
+    public long reverseTransformInteger(final long i, final int nBits) {
+        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
+        return BitwiseOperationUtil.signExtendLowestBitsToLong(i - this.offset, nBits);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("OffsetIntegerTransformer [offset=%d]", this.offset);
     }
 }

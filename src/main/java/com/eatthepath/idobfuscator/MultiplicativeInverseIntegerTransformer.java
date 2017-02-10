@@ -2,6 +2,8 @@ package com.eatthepath.idobfuscator;
 
 import java.math.BigInteger;
 
+import com.eatthepath.idobfuscator.util.BitwiseOperationUtil;
+
 /**
  * Transforms integers by multiplying them by a "secret" multiplier and reverses transformations by multiplying by the
  * secret's multiplicative inverse.
@@ -10,8 +12,8 @@ import java.math.BigInteger;
  */
 public class MultiplicativeInverseIntegerTransformer implements IntegerTransformer {
 
-    final int multiplier;
-    final int inverse;
+    private final long multiplier;
+    private final transient long[] inverses;
 
     /**
      * Constructs a new multiplicative inverse transformer with the given multiplier. Multipliers must be positive and
@@ -20,7 +22,7 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
      *
      * @param multiplier the multiplier to use when transforming integers
      */
-    public MultiplicativeInverseIntegerTransformer(final int multiplier) {
+    public MultiplicativeInverseIntegerTransformer(final long multiplier) {
         if (multiplier <= 0) {
             throw new IllegalArgumentException("Multiplier must be positive");
         } else if (multiplier % 2 == 0) {
@@ -28,7 +30,12 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
         }
 
         this.multiplier = multiplier;
-        this.inverse = (int) this.getMultiplicativeInverse(multiplier, Integer.SIZE);
+        this.inverses = new long[Long.SIZE + 1];
+        this.inverses[0] = 0;
+
+        for (int nBits = 1; nBits < this.inverses.length; nBits++) {
+            this.inverses[nBits] = this.getMultiplicativeInverse(BitwiseOperationUtil.getLowestBits(this.multiplier, nBits), nBits);
+        }
     }
 
     /**
@@ -39,8 +46,9 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
      * @return the integer multiplied by this transformer's "secret" multiplier
      */
     @Override
-    public int transformInteger(final int i) {
-        return i * this.multiplier;
+    public long transformInteger(final long i, final int nBits) {
+        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
+        return BitwiseOperationUtil.signExtendLowestBitsToLong(i * this.multiplier, nBits);
     }
 
     /**
@@ -52,8 +60,9 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
      * @return the original integer
      */
     @Override
-    public int reverseTransformInteger(final int i) {
-        return i * this.inverse;
+    public long reverseTransformInteger(final long i, final int nBits) {
+        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
+        return BitwiseOperationUtil.signExtendLowestBitsToLong(i * this.inverses[nBits], nBits);
     }
 
     private long getMultiplicativeInverse(final long multiplier, final int nBits) {
@@ -84,5 +93,10 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
         }
 
         return previousT.longValue();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("MultiplicativeInverseIntegerTransformer [multiplier=%d]", this.multiplier);
     }
 }

@@ -1,19 +1,16 @@
 package com.eatthepath.idobfuscator;
 
-import static org.junit.Assert.*;
+public class XorIntegerTransformerTest extends IntegerTransformerTest {
 
-import org.junit.Test;
+    @Override
+    public IntegerTransformer[] getTransformers() {
+        final long[] masks = new long[] { 0, 1, -7, 77, Long.MAX_VALUE, Long.MIN_VALUE };
+        final IntegerTransformer[] transformers = new IntegerTransformer[masks.length];
 
-public class XorIntegerTransformerTest {
-
-    @Test
-    public void test() {
-        for (final int mask : new int[] { 0, 1, -7, 77, Integer.MAX_VALUE, Integer.MIN_VALUE }) {
-            final XorIntegerTransformer transformer = new XorIntegerTransformer(mask);
-
-            for (final int id : new int[] { 0, 1, -7, 77, Integer.MAX_VALUE, Integer.MIN_VALUE }) {
-                assertEquals(id, transformer.reverseTransformInteger(transformer.reverseTransformInteger(id)));
-            }
+        for (int i = 0; i < masks.length; i++) {
+            transformers[i] = new XorIntegerTransformer(masks[i]);
         }
+
+        return transformers;
     }
 }
