@@ -38,7 +38,7 @@ final XorIntegerTransformer xor = new XorIntegerTransformer(4444266);
 final MultiplicativeInverseIntegerTransformer inverse =
         new MultiplicativeInverseIntegerTransformer(5237459);
 
-final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(codec,
+final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(Integer.SIZE, codec,
         rotate, offset, xor, inverse);
 
 System.out.println("| ID | Obfuscated ID  |");
@@ -52,18 +52,18 @@ for (int id = 0; id < 10; id++) {
 
 The example produces the following output:
 
-| id | obfuscated id |
-|----|---------------|
-| 0  | RYRJYLCR |
-| 1  | QJRDDJPV |
-| 2  | TTQRHYDR |
-| 3  | RKZQBNBP |
-| 4  | DPXDZVDC |
-| 5  | TBLQTFL |
-| 6  | RYCTHKQJ |
-| 7  | QJFVWXRL |
-| 8  | TTKZCWMJ |
-| 9  | RZMYYZRX |
+| ID | Obfuscated ID  |
+|----|----------------|
+| 0  | RYRJYLCR       |
+| 1  | QJRDDJPV       |
+| 2  | TTQRHYDR       |
+| 3  | RKZQBNBP       |
+| 4  | DPXDZVDC       |
+| 5  | YTBLQTFL       |
+| 6  | RYCTHKQJ       |
+| 7  | QJFVWXRL       |
+| 8  | TTKZCWMJ       |
+| 9  | RZMYYZRX       |
 
 In the above example, there are three major pieces of the puzzle: transformers, codecs, and a pipeline. We'll discuss each in turn.
 
@@ -71,18 +71,18 @@ In the above example, there are three major pieces of the puzzle: transformers, 
 
 The main point of interaction with ID Obfuscator is the `ObfuscationPipeline`. The pipeline combines a number of transformers and exactly one codec into a coherent tool for obfuscating and deobfuscating numbers. The type, number, and configuration of the transformers and the type and configuration codec all control the behavior of the pipeline. As an example, let's change the order of the transformers in the demo above to `offset, rotate, xor, inverse` (i.e. we swap the positions of `offset` and `rotate`). Now the output looks like this:
 
-| id | obfuscated id |
-|----|---------------|
-| 0  | DRTPBTCH |
-| 1  | DZNMZKTM |
-| 2  | WYFQDKR |
-| 3  | RLDBHFLT |
-| 4  | QFDNWZQR |
-| 5  | TWTLCHBT |
-| 6  | DRVJYCQC |
-| 7  | DVYHLLBV |
-| 8  | WFWMBTJ |
-| 9  | RLKJKQFP |
+| ID | Obfuscated ID  |
+|----|----------------|
+| 0  | DRTPBTCH       |
+| 1  | DZNMZKTM       |
+| 2  | YWYFQDKR       |
+| 3  | RLDBHFLT       |
+| 4  | QFDNWZQR       |
+| 5  | TWTLCHBT       |
+| 6  | DRVJYCQC       |
+| 7  | DVYHLLBV       |
+| 8  | YWFWMBTJ       |
+| 9  | RLKJKQFP       |
 
 This is, obviously, very different from the original output. We could achieve similar output changes by changing the value of the offset passed to the `OffsetIntegerTransformer`, for example, or changing the random seed passed to the codec. This has two very important consequences:
 
@@ -120,8 +120,10 @@ A codec takes a (possibly obfuscated) number and represents it as a string. Late
 
 ID Obfuscator comes with `AlphabetCodec`, which uses an alphabet you provide to represent numbers as strings, but you can certainly provide your own codec, too.
 
+### Variable widths
+
+You may have noticed that we passed `Integer.SIZE` to our example pipeline at construction time. Transformers and codecs can both operate on subsets of 64-bit integers, which allows you to construct a pipeline that works for integers of any size up to 64 bits. This can be handy, for example, if you know you have a 16-bit address space and want to keep your obfuscated IDs as short as possible. In our example, we're working with 32-bit integers (`Integer.SIZE`), but we could have passed `Long.SIZE` or `Byte.SIZE` or even `19` as an argument to the pipeline to work with integers of other sizes.
+
 ## The details
 
 ID Obfuscator is just that: an obfuscator. It makes it difficult for malicious users to figure out how to turn an obfuscated ID into a "real" ID, but not impossible. Caveat emptor.
-
-Currently, ID Obfuscator works with 32-bit integer IDs, but is likely to be extended to include larger data types in the future.

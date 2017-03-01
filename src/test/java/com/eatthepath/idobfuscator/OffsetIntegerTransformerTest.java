@@ -1,24 +1,16 @@
 package com.eatthepath.idobfuscator;
 
-import static org.junit.Assert.*;
+public class OffsetIntegerTransformerTest extends IntegerTransformerTest {
 
-import org.junit.Test;
+    @Override
+    public IntegerTransformer[] getTransformers() {
+        final long[] offsets = new long[] { 1, 17, -876, Long.MAX_VALUE, Long.MIN_VALUE };
+        final IntegerTransformer[] transformers = new IntegerTransformer[offsets.length];
 
-public class OffsetIntegerTransformerTest {
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testOffsetIntegerObfuscatorZeroOffset() {
-        new OffsetIntegerTransformer(0);
-    }
-
-    @Test
-    public void testTransformReverseTransform() {
-        for (final int offset : new int[] { 1, 17, -876, Integer.MAX_VALUE, Integer.MIN_VALUE}) {
-            final OffsetIntegerTransformer transformer = new OffsetIntegerTransformer(offset);
-
-            for (final int id : new int[] {0, 12, 284935728, -837, Integer.MAX_VALUE, Integer.MIN_VALUE }) {
-                assertEquals(id, transformer.reverseTransformInteger(transformer.transformInteger(id)));
-            }
+        for (int i = 0; i < offsets.length; i++) {
+            transformers[i] = new OffsetIntegerTransformer(offsets[i]);
         }
+
+        return transformers;
     }
 }

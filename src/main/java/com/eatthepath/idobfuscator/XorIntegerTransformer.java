@@ -1,5 +1,7 @@
 package com.eatthepath.idobfuscator;
 
+import com.eatthepath.idobfuscator.util.BitwiseOperationUtil;
+
 /**
  * Transforms integers by performing a bitwise XOR operation with a given "secret" mask.
  *
@@ -7,14 +9,14 @@ package com.eatthepath.idobfuscator;
  */
 public class XorIntegerTransformer implements IntegerTransformer {
 
-    private final int mask;
+    private final long mask;
 
     /**
      * Creates a new XOR transformer with the given "secret" mask.
      *
      * @param mask the mask to be applied when transforming numbers
      */
-    public XorIntegerTransformer(final int mask) {
+    public XorIntegerTransformer(final long mask) {
         this.mask = mask;
     }
 
@@ -26,8 +28,9 @@ public class XorIntegerTransformer implements IntegerTransformer {
      * @return the transformed integer
      */
     @Override
-    public int transformInteger(final int i) {
-        return i ^ this.mask;
+    public long transformInteger(final long i, final int nBits) {
+        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
+        return BitwiseOperationUtil.signExtendLowestBitsToLong(i ^ this.mask, nBits);
     }
 
     /**
@@ -38,7 +41,13 @@ public class XorIntegerTransformer implements IntegerTransformer {
      * @return the original integer
      */
     @Override
-    public int reverseTransformInteger(final int i) {
-        return i ^ this.mask;
+    public long reverseTransformInteger(final long i, final int nBits) {
+        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
+        return BitwiseOperationUtil.signExtendLowestBitsToLong(i ^ this.mask, nBits);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("XorIntegerTransformer [mask=%x]", this.mask);
     }
 }

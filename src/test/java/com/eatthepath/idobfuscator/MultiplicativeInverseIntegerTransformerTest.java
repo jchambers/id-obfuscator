@@ -1,10 +1,8 @@
 package com.eatthepath.idobfuscator;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-public class MultiplicativeInverseIntegerTransformerTest {
+public class MultiplicativeInverseIntegerTransformerTest extends IntegerTransformerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testMultiplicativeInverseIntegerTransformerZeroMultiplier() {
@@ -21,18 +19,15 @@ public class MultiplicativeInverseIntegerTransformerTest {
         new MultiplicativeInverseIntegerTransformer(862983572);
     }
 
-    @Test
-    public void testObfuscateDeobfuscate() {
-        final int[] multipliers = { 77, Integer.MAX_VALUE };
-        final int[] ids = { 7890, -7458392, Integer.MAX_VALUE, Integer.MIN_VALUE };
+    @Override
+    public IntegerTransformer[] getTransformers() {
+        final long[] multipliers = new long[] { 77, Integer.MAX_VALUE };
+        final IntegerTransformer[] transformers = new MultiplicativeInverseIntegerTransformer[multipliers.length];
 
-        for (final int multiplier : multipliers) {
-            for (final int id : ids) {
-                final MultiplicativeInverseIntegerTransformer transformer =
-                        new MultiplicativeInverseIntegerTransformer(multiplier);
-
-                assertEquals(id, transformer.reverseTransformInteger(transformer.transformInteger(id)));
-            }
+        for (int i = 0; i < multipliers.length; i++) {
+            transformers[i] = new MultiplicativeInverseIntegerTransformer(multipliers[i]);
         }
+
+        return transformers;
     }
 }

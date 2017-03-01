@@ -18,14 +18,14 @@ public class ExampleApp {
         final MultiplicativeInverseIntegerTransformer inverse =
                 new MultiplicativeInverseIntegerTransformer(5237459);
 
-        final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(codec,
+        final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(Integer.SIZE, codec,
                 rotate, offset, xor, inverse);
 
         System.out.println("| ID | Obfuscated ID  |");
         System.out.println("|----|----------------|");
 
         for (int id = 0; id < 10; id++) {
-            System.out.format("| %d  | %s |\n", id, pipeline.obfuscate(id));
+            System.out.format("| %d  | %-14s |\n", id, pipeline.obfuscate(id));
             assert id == pipeline.deobfuscate(pipeline.obfuscate(id));
         }
     }

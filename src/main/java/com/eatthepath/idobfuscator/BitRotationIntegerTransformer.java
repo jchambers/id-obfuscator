@@ -1,5 +1,7 @@
 package com.eatthepath.idobfuscator;
 
+import com.eatthepath.idobfuscator.util.BitwiseOperationUtil;
+
 /**
  * Transforms integers by performing a circular bit shift.
  *
@@ -10,14 +12,13 @@ public class BitRotationIntegerTransformer implements IntegerTransformer {
     private final int distance;
 
     /**
-     * Constructs a new bit rotation transformer that rotates bits by the given distance. The distance must be between
-     * 1 and 31.
+     * Constructs a new bit rotation transformer that performs a circular rotation of bits by the given distance.
      *
-     * @param distance the number of places by which to rotate integers
+     * @param distance the number of places by which to rotate integers; must be non-negative
      */
     public BitRotationIntegerTransformer(final int distance) {
-        if (distance <= 0 || distance >= Integer.SIZE) {
-            throw new IllegalArgumentException(String.format("Rotation distance must be between 0 and %d bits", Integer.SIZE));
+        if (distance < 0) {
+            throw new IllegalArgumentException("Rotation distance must be non-zero.");
         }
 
         this.distance = distance;
@@ -31,8 +32,13 @@ public class BitRotationIntegerTransformer implements IntegerTransformer {
      * @return the rotated integer
      */
     @Override
-    public int transformInteger(final int i) {
-        return (i << this.distance) | (i >>> (Integer.SIZE - this.distance));
+    public long transformInteger(final long i, final int nBits) {
+        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
+
+        final int effectiveDistance = this.distance % nBits;
+
+        return BitwiseOperationUtil.signExtendLowestBitsToLong(
+                (i << effectiveDistance) | (BitwiseOperationUtil.getLowestBits(i, nBits) >>> (nBits - effectiveDistance)), nBits);
     }
 
     /**
@@ -43,7 +49,17 @@ public class BitRotationIntegerTransformer implements IntegerTransformer {
      * @return the original integer
      */
     @Override
-    public int reverseTransformInteger(final int i) {
-        return (i >>> this.distance) | (i << (Integer.SIZE - this.distance));
+    public long reverseTransformInteger(final long i, final int nBits) {
+        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
+
+        final int effectiveDistance = this.distance % nBits;
+
+        return BitwiseOperationUtil.signExtendLowestBitsToLong(
+                (BitwiseOperationUtil.getLowestBits(i, nBits) >>> effectiveDistance) | (i << (nBits - effectiveDistance)), nBits);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("BitRotationIntegerTransformer [distance=%d]", this.distance);
     }
 }

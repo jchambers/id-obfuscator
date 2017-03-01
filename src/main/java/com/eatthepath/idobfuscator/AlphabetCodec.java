@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.eatthepath.idobfuscator.util.BitwiseOperationUtil;
+
 /**
  * <p>Converts integers to strings using an arbitrary alphabet. As with a "normal" string representation of a number,
  * each character in a string produced by this codec represents a numeric value, and the position of the character
@@ -17,9 +19,10 @@ import java.util.Objects;
 public class AlphabetCodec implements IntegerCodec {
 
     private final char[] alphabet;
-    private final Map<Character, Integer> charactersToValues = new HashMap<>();
+    private final transient Map<Character, Integer> charactersToValues = new HashMap<>();
 
-    private final int placeValues[];
+    private final transient int[] stringLengthsBySize;
+    private final transient long[] placeValues;
 
     /**
      * <p>Constructs a new alphabet codec that uses the given alphabet to encode and decode integers. Note that the
@@ -34,6 +37,8 @@ public class AlphabetCodec implements IntegerCodec {
      * </ul>
      *
      * @param alphabet the alphabet to use when encoding or decoding integers
+     *
+     * @throws IllegalArgumentException if the given alphabet is too short or contains repeated characters
      *
      * @see com.eatthepath.idobfuscator.util.AlphabetBuilder
      */
@@ -60,14 +65,24 @@ public class AlphabetCodec implements IntegerCodec {
 
         // Based on the size of the alphabet and the width of an integer, we can determine the maximum length of a
         // string needed to represent any integer value with the given alphabet. With that, we can both perform some
-        // low-cost error-checking when we try to decode strings and also precalculate place values to avoid repeating
+        // low-cost error-checking when we try to decode strings and also pre-calculate place values to avoid repeating
         // work when decoding.
-        final int maxStringLength = (int) Math.ceil(Math.log(Math.pow(2, Integer.SIZE)) / Math.log(this.alphabet.length));
+        this.stringLengthsBySize = new int[Long.SIZE + 1];
+        {
+            this.stringLengthsBySize[0] = 0;
 
-        this.placeValues = new int[maxStringLength];
+            final double logAlphabetLength = Math.log(this.alphabet.length);
+
+            for (int size = 1; size < this.stringLengthsBySize.length; size++) {
+                this.stringLengthsBySize[size] = (int) Math.ceil(Math.log(Math.pow(2, size)) / logAlphabetLength);
+            }
+        }
+
+        // We only need as many place values as can be represented by the longest possible string for this alphabet
+        this.placeValues = new long[this.stringLengthsBySize[this.stringLengthsBySize.length - 1]];
         this.placeValues[0] = 1;
 
-        for (int i = 1; i < maxStringLength; i++) {
+        for (int i = 1; i < this.placeValues.length; i++) {
             this.placeValues[i] = this.placeValues[i - 1] * this.alphabet.length;
         }
     }
@@ -78,26 +93,23 @@ public class AlphabetCodec implements IntegerCodec {
      * @param i the integer to encode
      *
      * @return a string representation of the given integer
+     *
+     * @throws IllegalArgumentException if the given integer cannot be expressed with {@code nBits} bits
      */
     @Override
-    public String encodeIntegerAsString(final int i) {
-        final String encodedString;
+    public String encodeIntegerAsString(final long i, final int nBits) {
+        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
 
-        if (i == 0) {
-            encodedString = new String(new char[] { this.alphabet[0] });
-        } else {
-            int workingCopy = i;
-            final char[] encodedCharacters = new char[this.placeValues.length];
+        long workingCopy = BitwiseOperationUtil.getLowestBits(i, nBits);
 
-            for (int j = encodedCharacters.length - 1; j >= 0; j--) {
-                encodedCharacters[j] = this.alphabet[Integer.remainderUnsigned(workingCopy, this.alphabet.length)];
-                workingCopy = Integer.divideUnsigned(workingCopy, this.alphabet.length);
-            }
+        final char[] encodedCharacters = new char[this.stringLengthsBySize[nBits]];
 
-            encodedString = new String(encodedCharacters);
+        for (int j = encodedCharacters.length - 1; j >= 0; j--) {
+            encodedCharacters[j] = this.alphabet[(int) Long.remainderUnsigned(workingCopy, this.alphabet.length)];
+            workingCopy = Long.divideUnsigned(workingCopy, this.alphabet.length);
         }
 
-        return encodedString;
+        return new String(encodedCharacters);
     }
 
     /**
@@ -108,29 +120,28 @@ public class AlphabetCodec implements IntegerCodec {
      * @return the integer represented by the given string
      *
      * @throws IllegalArgumentException if the given string is too long to represent a valid integer using this codec's
-     * alphabet
-     * @throws IllegalArgumentException if the given string contains characters not in this codec's alphabet
+     * alphabet, or if the given string contains characters not in this codec's alphabet
      */
     @Override
-    public int decodeStringAsInteger(final String string) {
-        if (string.length() > this.placeValues.length) {
-            throw new IllegalArgumentException(String.format("String \"%s\" is too long to represent a valid integer.", string));
+    public long decodeStringAsInteger(final String string, final int nBits) {
+        if (string.length() > this.stringLengthsBySize[nBits]) {
+            throw new IllegalArgumentException(
+                    String.format("String \"%s\" is too long to represent a valid %d-bit integer in this codec's alphabet.", string, nBits));
         }
 
         final char[] chars = string.toCharArray();
         long decoded = 0;
-        int exponent = chars.length - 1;
+        int place = chars.length - 1;
 
         for (final char c : chars) {
             try {
-                final int x = this.charactersToValues.get(c);
-                decoded += x * this.placeValues[exponent--];
+                decoded += this.charactersToValues.get(c) * this.placeValues[place--];
             } catch (final NullPointerException e) {
-                throw new IllegalArgumentException(String.format("Could not decode \"%s\"; character '%s' not in codec alphabet.",
-                        string, c));
+                throw new IllegalArgumentException(
+                        String.format("Could not decode \"%s\"; character '%s' not in codec alphabet.", string, c));
             }
         }
 
-        return (int) decoded;
+        return BitwiseOperationUtil.signExtendLowestBitsToLong(decoded, nBits);
     }
 }
