@@ -126,4 +126,4 @@ You may have noticed that we passed `Integer.SIZE` to our example pipeline at co
 
 ## The details
 
-ID Obfuscator is just that: an obfuscator. It makes it difficult for malicious users to figure out how to turn an obfuscated ID into a "real" ID, but not impossible. Caveat emptor.
+ID Obfuscator is just that: an obfuscator. It makes it difficult for malicious users to figure out how to turn an obfuscated ID into a "real" ID, but not impossible. Under no circumstances should it be used to encode sensitive information like credit card numbers, PINs, or phone numbers. Caveat emptor.
