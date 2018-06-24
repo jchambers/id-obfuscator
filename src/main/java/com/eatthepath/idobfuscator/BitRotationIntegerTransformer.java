@@ -7,7 +7,7 @@ package com.eatthepath.idobfuscator;
  */
 public class BitRotationIntegerTransformer implements IntegerTransformer {
 
-    private final int originalDistance;
+    private final long originalDistance;
     private transient final int effectiveDistance;
 
     /**
@@ -15,11 +15,11 @@ public class BitRotationIntegerTransformer implements IntegerTransformer {
      *
      * @param distance the number of places by which to rotate integers
      */
-    public BitRotationIntegerTransformer(final int distance) {
+    public BitRotationIntegerTransformer(final long distance) {
         this.originalDistance = distance;
 
         // Normalize the rotation distance to the range of [0, 64).
-        this.effectiveDistance = (distance % Long.SIZE) + (distance < 0 ? Long.SIZE : 0);
+        this.effectiveDistance = (int) ((distance % Long.SIZE) + (distance < 0 ? Long.SIZE : 0));
     }
 
     int getEffectiveDistance() {

@@ -7,19 +7,22 @@ public class ExampleApp {
     public static void main(final String[] args) {
         final AlphabetCodec codec = new AlphabetCodec(new AlphabetBuilder()
                 .includeUppercaseLatinLetters()
+                .includeDigits()
                 .excludeVowels()
                 .excludeVisuallySimilarCharacters()
-                .shuffleWithRandomSeed(95839275)
+                .shuffleWithRandomSeed(0x4800211a78094023L)
                 .build());
 
-        final BitRotationIntegerTransformer rotate = new BitRotationIntegerTransformer(17);
-        final OffsetIntegerTransformer offset = new OffsetIntegerTransformer(785374208);
-        final XorIntegerTransformer xor = new XorIntegerTransformer(4444266);
         final MultiplicativeInverseIntegerTransformer inverse =
-                new MultiplicativeInverseIntegerTransformer(5237459);
+                new MultiplicativeInverseIntegerTransformer(0x1909719a5ee544adL);
+
+        final BitRotationIntegerTransformer rotate = new BitRotationIntegerTransformer(22);
+        final OffsetIntegerTransformer offset = new OffsetIntegerTransformer(0xe45c2f833b2f0474L);
+        final XorIntegerTransformer xor = new XorIntegerTransformer(0xe41c643d0593242L);
+
 
         final IntegerObfuscationPipeline pipeline =
-                new IntegerObfuscationPipeline(codec, rotate, offset, xor, inverse);
+                new IntegerObfuscationPipeline(codec, inverse, rotate, offset, xor);
 
         System.out.println("| ID | Obfuscated ID  |");
         System.out.println("|----|----------------|");
