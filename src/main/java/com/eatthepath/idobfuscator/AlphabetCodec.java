@@ -1,7 +1,6 @@
 package com.eatthepath.idobfuscator;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -17,7 +16,8 @@ import java.util.Objects;
 public class AlphabetCodec implements IntegerCodec {
 
     private final char[] alphabet;
-    private final transient Map<Character, Integer> charactersToValues = new HashMap<>();
+
+    private final transient int[] characterValues;
 
     private final transient int maximumStringLength;
     private final transient long[] placeValues;
@@ -57,8 +57,17 @@ public class AlphabetCodec implements IntegerCodec {
 
         this.alphabet = alphabet;
 
+        int maxCharacterInAlphabet = Integer.MIN_VALUE;
+
+        for (char c : this.alphabet) {
+            maxCharacterInAlphabet = Math.max(maxCharacterInAlphabet, c);
+        }
+
+        this.characterValues = new int[maxCharacterInAlphabet + 1];
+        Arrays.fill(this.characterValues, -1);
+
         for (int i = 0; i < alphabet.length; i++) {
-            this.charactersToValues.put(alphabet[i], i);
+            this.characterValues[alphabet[i]] = i;
         }
 
         // Based on the size of the alphabet and the width of an integer, we can determine the maximum length of a
@@ -121,8 +130,15 @@ public class AlphabetCodec implements IntegerCodec {
 
         for (final char c : chars) {
             try {
-                decoded += this.charactersToValues.get(c) * this.placeValues[place--];
-            } catch (final NullPointerException e) {
+                final int characterValue = this.characterValues[c];
+
+                if (characterValue < 0) {
+                    throw new IllegalArgumentException(
+                            String.format("Could not decode \"%s\"; character '%s' not in codec alphabet.", string, c));
+                }
+
+                decoded += characterValue * this.placeValues[place--];
+            } catch (final ArrayIndexOutOfBoundsException e) {
                 throw new IllegalArgumentException(
                         String.format("Could not decode \"%s\"; character '%s' not in codec alphabet.", string, c));
             }
