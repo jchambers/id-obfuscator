@@ -12,7 +12,7 @@ public class AlphabetCodecTest extends IntegerCodecTest {
 
     @Test(expected = NullPointerException.class)
     public void testAlphabetCodecNullAlphabet() {
-        new AlphabetCodec(null);
+        new AlphabetCodec((char[]) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -32,7 +32,7 @@ public class AlphabetCodecTest extends IntegerCodecTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDecodeUnexpectedCharacter() {
-        new AlphabetCodec('a', 'b', 'c', 'd').decodeStringAsInteger("x", Integer.SIZE);
+        new AlphabetCodec('a', 'b', 'c', 'd').decodeStringAsInteger("x");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -44,6 +44,6 @@ public class AlphabetCodecTest extends IntegerCodecTest {
                 .build();
 
         new AlphabetCodec(alphabet).decodeStringAsInteger(
-                "Even though this string contains legal characters, it is too long to represent a valid integer.", Integer.SIZE);
+                "Even though this string contains legal characters, it is too long to represent a valid integer.");
     }
 }

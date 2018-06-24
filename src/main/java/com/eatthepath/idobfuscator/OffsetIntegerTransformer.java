@@ -1,7 +1,5 @@
 package com.eatthepath.idobfuscator;
 
-import com.eatthepath.idobfuscator.util.BitwiseOperationUtil;
-
 /**
  * Transforms integers by adding a given offset, and reverses transformations by subtracting that offset.
  *
@@ -29,9 +27,8 @@ public class OffsetIntegerTransformer implements IntegerTransformer {
      * @return the transformed integer
      */
     @Override
-    public long transformInteger(final long i, final int nBits) {
-        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
-        return BitwiseOperationUtil.signExtendLowestBitsToLong(i + this.offset, nBits);
+    public long transformInteger(final long i) {
+        return i + this.offset;
     }
 
     /**
@@ -42,9 +39,8 @@ public class OffsetIntegerTransformer implements IntegerTransformer {
      * @return the original integer
      */
     @Override
-    public long reverseTransformInteger(final long i, final int nBits) {
-        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
-        return BitwiseOperationUtil.signExtendLowestBitsToLong(i - this.offset, nBits);
+    public long reverseTransformInteger(final long i) {
+        return i - this.offset;
     }
 
     @Override

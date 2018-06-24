@@ -1,12 +1,12 @@
 package com.eatthepath.idobfuscator.util;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class AlphabetBuilderTest {
 
@@ -70,7 +70,7 @@ public class AlphabetBuilderTest {
     @Test
     public void testIncludeAdditionalCharactersCollectionOfCharacter() {
         final char[] alphabet = new AlphabetBuilder()
-                .includeAdditionalCharacters(Arrays.asList(new Character[] { 'a', 'b', 'c' }))
+                .includeAdditionalCharacters(Arrays.asList('a', 'b', 'c'))
                 .build();
 
         assertEquals(3, alphabet.length);
@@ -91,7 +91,7 @@ public class AlphabetBuilderTest {
     public void testExcludeAdditionalCharactersCollectionOfCharacter() {
         final char[] alphabet = new AlphabetBuilder()
                 .includeLowercaseLatinLetters()
-                .excludeAdditionalCharacters(Arrays.asList(new Character[] { 'a', 'b', 'c' }))
+                .excludeAdditionalCharacters(Arrays.asList('a', 'b', 'c'))
                 .build();
 
         assertEquals(23, alphabet.length);
@@ -135,7 +135,7 @@ public class AlphabetBuilderTest {
             shuffledSet.add(c);
         }
 
-        assertTrue(unshuffledSet.equals(shuffledSet));
+        assertEquals(unshuffledSet, shuffledSet);
     }
 
     private static void assertAlphabetContainsAllCharactersInString(final char[] alphabet, final String string) {

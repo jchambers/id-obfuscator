@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.eatthepath.idobfuscator.util.BitwiseOperationUtil;
-
 /**
  * <p>Converts integers to strings using an arbitrary alphabet. As with a "normal" string representation of a number,
  * each character in a string produced by this codec represents a numeric value, and the position of the character
@@ -21,7 +19,7 @@ public class AlphabetCodec implements IntegerCodec {
     private final char[] alphabet;
     private final transient Map<Character, Integer> charactersToValues = new HashMap<>();
 
-    private final transient int[] stringLengthsBySize;
+    private final transient int maximumStringLength;
     private final transient long[] placeValues;
 
     /**
@@ -67,19 +65,9 @@ public class AlphabetCodec implements IntegerCodec {
         // string needed to represent any integer value with the given alphabet. With that, we can both perform some
         // low-cost error-checking when we try to decode strings and also pre-calculate place values to avoid repeating
         // work when decoding.
-        this.stringLengthsBySize = new int[Long.SIZE + 1];
-        {
-            this.stringLengthsBySize[0] = 0;
+        this.maximumStringLength = (int) Math.ceil(Math.log(Math.pow(2, Long.SIZE)) / Math.log(this.alphabet.length));
 
-            final double logAlphabetLength = Math.log(this.alphabet.length);
-
-            for (int size = 1; size < this.stringLengthsBySize.length; size++) {
-                this.stringLengthsBySize[size] = (int) Math.ceil(Math.log(Math.pow(2, size)) / logAlphabetLength);
-            }
-        }
-
-        // We only need as many place values as can be represented by the longest possible string for this alphabet
-        this.placeValues = new long[this.stringLengthsBySize[this.stringLengthsBySize.length - 1]];
+        this.placeValues = new long[this.maximumStringLength];
         this.placeValues[0] = 1;
 
         for (int i = 1; i < this.placeValues.length; i++) {
@@ -97,12 +85,10 @@ public class AlphabetCodec implements IntegerCodec {
      * @throws IllegalArgumentException if the given integer cannot be expressed with {@code nBits} bits
      */
     @Override
-    public String encodeIntegerAsString(final long i, final int nBits) {
-        BitwiseOperationUtil.assertValueFitsWithinSize(i, nBits);
+    public String encodeIntegerAsString(final long i) {
+        long workingCopy = i;
 
-        long workingCopy = BitwiseOperationUtil.getLowestBits(i, nBits);
-
-        final char[] encodedCharacters = new char[this.stringLengthsBySize[nBits]];
+        final char[] encodedCharacters = new char[this.maximumStringLength];
 
         for (int j = encodedCharacters.length - 1; j >= 0; j--) {
             encodedCharacters[j] = this.alphabet[(int) Long.remainderUnsigned(workingCopy, this.alphabet.length)];
@@ -123,10 +109,10 @@ public class AlphabetCodec implements IntegerCodec {
      * alphabet, or if the given string contains characters not in this codec's alphabet
      */
     @Override
-    public long decodeStringAsInteger(final String string, final int nBits) {
-        if (string.length() > this.stringLengthsBySize[nBits]) {
+    public long decodeStringAsInteger(final String string) {
+        if (string.length() > this.maximumStringLength) {
             throw new IllegalArgumentException(
-                    String.format("String \"%s\" is too long to represent a valid %d-bit integer in this codec's alphabet.", string, nBits));
+                    String.format("String \"%s\" is too long to represent a valid 64-bit integer in this codec's alphabet.", string));
         }
 
         final char[] chars = string.toCharArray();
@@ -142,6 +128,6 @@ public class AlphabetCodec implements IntegerCodec {
             }
         }
 
-        return BitwiseOperationUtil.signExtendLowestBitsToLong(decoded, nBits);
+        return decoded;
     }
 }

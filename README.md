@@ -120,10 +120,6 @@ A codec takes a (possibly obfuscated) number and represents it as a string. Late
 
 ID Obfuscator comes with `AlphabetCodec`, which uses an alphabet you provide to represent numbers as strings, but you can certainly provide your own codec, too.
 
-### Variable widths
-
-You may have noticed that we passed `Integer.SIZE` to our example pipeline at construction time. Transformers and codecs can both operate on subsets of 64-bit integers, which allows you to construct a pipeline that works for integers of any size up to 64 bits. This can be handy, for example, if you know you have a 16-bit address space and want to keep your obfuscated IDs as short as possible. In our example, we're working with 32-bit integers (`Integer.SIZE`), but we could have passed `Long.SIZE` or `Byte.SIZE` or even `19` as an argument to the pipeline to work with integers of other sizes.
-
 ## The details
 
 ID Obfuscator is just that: an obfuscator. It makes it difficult for malicious users to figure out how to turn an obfuscated ID into a "real" ID, but not impossible. Under no circumstances should it be used to encode sensitive information like credit card numbers, PINs, or phone numbers. Caveat emptor.

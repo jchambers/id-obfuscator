@@ -2,8 +2,6 @@ package com.eatthepath.idobfuscator;
 
 import java.util.Objects;
 
-import com.eatthepath.idobfuscator.util.BitwiseOperationUtil;
-
 /**
  * <p>An integer obfuscation pipeline combines any number of {@link IntegerTransformer} instances and exactly one
  * {@link IntegerCodec} to obfuscate and deobfuscate integers.</p>
@@ -15,16 +13,12 @@ import com.eatthepath.idobfuscator.util.BitwiseOperationUtil;
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
 public class IntegerObfuscationPipeline {
-    private final int nBits;
-
     private final IntegerTransformer[] transformers;
     private final IntegerCodec codec;
 
     /**
      * Constructs a new obfuscation pipeline with the given codec and transformers.
      *
-     * @param nBits the maximum "width," in bits, of integers to obfuscate and deobfuscate; must be between 1 and 64,
-     * inclusive
      * @param codec the codec to be used to convert potentially-obfuscated integers to and from strings; must not be
      * {@code null}
      * @param transformers any number of transformers to be applied to integers to be obfuscated or deobfuscated; may be
@@ -32,14 +26,8 @@ public class IntegerObfuscationPipeline {
      *
      * @throws IllegalArgumentException if {@code nBits} does not fall between 1 and 64, inclusive
      */
-    public IntegerObfuscationPipeline(final int nBits, final IntegerCodec codec, final IntegerTransformer... transformers) {
+    public IntegerObfuscationPipeline(final IntegerCodec codec, final IntegerTransformer... transformers) {
         Objects.requireNonNull(codec, "Codec must not be null");
-
-        if (nBits < 1 || nBits > Long.SIZE) {
-            throw new IllegalArgumentException("Number of bits must be between 1 and 64.");
-        }
-
-        this.nBits = nBits;
 
         this.transformers = transformers;
         this.codec = codec;
@@ -58,15 +46,13 @@ public class IntegerObfuscationPipeline {
      * @throws IllegalArgumentException if the given integer cannot be expressed with this pipeline's bit size
      */
     public String obfuscate(final long i) {
-        BitwiseOperationUtil.assertValueFitsWithinSize(i, this.nBits);
-
         long encodedInteger = i;
 
         for (final IntegerTransformer obfuscator : this.transformers) {
-            encodedInteger = obfuscator.transformInteger(encodedInteger, this.nBits);
+            encodedInteger = obfuscator.transformInteger(encodedInteger);
         }
 
-        return this.codec.encodeIntegerAsString(encodedInteger, this.nBits);
+        return this.codec.encodeIntegerAsString(encodedInteger);
     }
 
     /**
@@ -78,10 +64,10 @@ public class IntegerObfuscationPipeline {
      * @return the deobfuscated integer represented by the given string
      */
     public long deobfuscate(final String string) {
-        long decodedInteger = this.codec.decodeStringAsInteger(string, this.nBits);
+        long decodedInteger = this.codec.decodeStringAsInteger(string);
 
         for (int i = this.transformers.length - 1; i >= 0; i--) {
-            decodedInteger = this.transformers[i].reverseTransformInteger(decodedInteger, this.nBits);
+            decodedInteger = this.transformers[i].reverseTransformInteger(decodedInteger);
         }
 
         return decodedInteger;

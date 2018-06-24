@@ -18,8 +18,8 @@ public class ExampleApp {
         final MultiplicativeInverseIntegerTransformer inverse =
                 new MultiplicativeInverseIntegerTransformer(5237459);
 
-        final IntegerObfuscationPipeline pipeline = new IntegerObfuscationPipeline(Integer.SIZE, codec,
-                rotate, offset, xor, inverse);
+        final IntegerObfuscationPipeline pipeline =
+                new IntegerObfuscationPipeline(codec, rotate, offset, xor, inverse);
 
         System.out.println("| ID | Obfuscated ID  |");
         System.out.println("|----|----------------|");
