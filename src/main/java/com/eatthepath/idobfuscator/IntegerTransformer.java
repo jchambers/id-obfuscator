@@ -17,14 +17,14 @@ public interface IntegerTransformer {
      *
      * @return the transformed integer
      */
-    long transformInteger(long i);
+    int transformInteger(int i);
 
     /**
-     * Reverses the transformation applied by the {@link #transformInteger(long)} method.
+     * Reverses the transformation applied by the {@link #transformInteger(int)} method.
      *
      * @param i the transformed integer for which to reverse transformation
      *
      * @return the original integer
      */
-    long reverseTransformInteger(long i);
+    int reverseTransformInteger(int i);
 }

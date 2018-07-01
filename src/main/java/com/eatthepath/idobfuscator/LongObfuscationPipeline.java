@@ -12,10 +12,9 @@ import java.util.Objects;
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
-public class IntegerObfuscationPipeline {
-
-    private final IntegerTransformer[] transformers;
-    private final IntegerCodec codec;
+public class LongObfuscationPipeline {
+    private final LongTransformer[] transformers;
+    private final LongCodec codec;
 
     /**
      * Constructs a new obfuscation pipeline with the given codec and transformers.
@@ -24,8 +23,10 @@ public class IntegerObfuscationPipeline {
      * {@code null}
      * @param transformers any number of transformers to be applied to integers to be obfuscated or deobfuscated; may be
      * empty or {@code null}
+     *
+     * @throws IllegalArgumentException if {@code nBits} does not fall between 1 and 64, inclusive
      */
-    public IntegerObfuscationPipeline(final IntegerCodec codec, final IntegerTransformer... transformers) {
+    public LongObfuscationPipeline(final LongCodec codec, final LongTransformer... transformers) {
         Objects.requireNonNull(codec, "Codec must not be null");
 
         this.transformers = transformers;
@@ -44,14 +45,14 @@ public class IntegerObfuscationPipeline {
      *
      * @throws IllegalArgumentException if the given integer cannot be expressed with this pipeline's bit size
      */
-    public String obfuscate(final int i) {
-        int encodedInteger = i;
+    public String obfuscate(final long i) {
+        long encodedInteger = i;
 
-        for (final IntegerTransformer obfuscator : this.transformers) {
-            encodedInteger = obfuscator.transformInteger(encodedInteger);
+        for (final LongTransformer obfuscator : this.transformers) {
+            encodedInteger = obfuscator.transformLong(encodedInteger);
         }
 
-        return this.codec.encodeIntegerAsString(encodedInteger);
+        return this.codec.encodeLongAsString(encodedInteger);
     }
 
     /**
@@ -62,11 +63,11 @@ public class IntegerObfuscationPipeline {
      *
      * @return the deobfuscated integer represented by the given string
      */
-    public int deobfuscate(final String string) {
-        int decodedInteger = this.codec.decodeStringAsInteger(string);
+    public long deobfuscate(final String string) {
+        long decodedInteger = this.codec.decodeStringAsLong(string);
 
         for (int i = this.transformers.length - 1; i >= 0; i--) {
-            decodedInteger = this.transformers[i].reverseTransformInteger(decodedInteger);
+            decodedInteger = this.transformers[i].reverseTransformLong(decodedInteger);
         }
 
         return decodedInteger;

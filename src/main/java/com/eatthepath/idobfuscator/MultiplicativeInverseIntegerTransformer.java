@@ -1,7 +1,5 @@
 package com.eatthepath.idobfuscator;
 
-import java.math.BigInteger;
-
 /**
  * Transforms integers by multiplying them by a "secret" multiplier and reverses transformations by multiplying by the
  * secret's multiplicative inverse.
@@ -10,8 +8,8 @@ import java.math.BigInteger;
  */
 public class MultiplicativeInverseIntegerTransformer implements IntegerTransformer {
 
-    private final long multiplier;
-    private final transient long inverse;
+    private final int multiplier;
+    private final transient int inverse;
 
     /**
      * Constructs a new multiplicative inverse transformer with the given multiplier. Multipliers must be positive and
@@ -20,7 +18,7 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
      *
      * @param multiplier the multiplier to use when transforming integers
      */
-    public MultiplicativeInverseIntegerTransformer(final long multiplier) {
+    public MultiplicativeInverseIntegerTransformer(final int multiplier) {
         if (multiplier <= 0) {
             throw new IllegalArgumentException("Multiplier must be positive");
         } else if (multiplier % 2 == 0) {
@@ -40,51 +38,51 @@ public class MultiplicativeInverseIntegerTransformer implements IntegerTransform
      * @return the integer multiplied by this transformer's "secret" multiplier
      */
     @Override
-    public long transformInteger(final long i) {
+    public int transformInteger(final int i) {
         return i * this.multiplier;
     }
 
     /**
-     * Reverses a multiplication transformation by multiplying the given integer by the multiplicative inverse of this
-     * transformer's "secret" multiplier.
+     * Reverses a multiplication transformation by multiplying the given integer by the multiplicative inverse of
+     * this transformer's "secret" multiplier.
      *
      * @param i the integer for which to reverse a multiplication transformation
      *
      * @return the original integer
      */
     @Override
-    public long reverseTransformInteger(final long i) {
+    public int reverseTransformInteger(final int i) {
         return i * this.inverse;
     }
 
-    private static long getMultiplicativeInverse(final long multiplier) {
-        BigInteger s = BigInteger.ZERO, previousS = BigInteger.ONE;
-        BigInteger t = BigInteger.ONE, previousT = BigInteger.ZERO;
-        BigInteger r = BigInteger.valueOf(multiplier), previousR = BigInteger.ONE.shiftLeft(Long.SIZE);
+    private static int getMultiplicativeInverse(final int multiplier) {
+        long s = 0, previousS = 1;
+        long t = 1, previousT = 0;
+        long r = multiplier, previousR = 1L << Integer.SIZE;
 
-        while (!BigInteger.ZERO.equals(r)) {
-            final BigInteger q = previousR.divide(r);
+        while (r != 0) {
+            final long q = previousR / r;
 
             {
-                final BigInteger tempR = r;
-                r = previousR.subtract(q.multiply(r));
+                final long tempR = r;
+                r = previousR - (q * r);
                 previousR = tempR;
             }
 
             {
-                final BigInteger tempS = s;
-                s = previousS.subtract(q.multiply(s));
+                final long tempS = s;
+                s = previousS - (q * s);
                 previousS = tempS;
             }
 
             {
-                final BigInteger tempT = t;
-                t = previousT.subtract(q.multiply(t));
+                final long tempT = t;
+                t = previousT - (q * t);
                 previousT = tempT;
             }
         }
 
-        return previousT.longValue();
+        return (int) previousT;
     }
 
     @Override

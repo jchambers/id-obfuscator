@@ -34,39 +34,38 @@ final AlphabetCodec codec = new AlphabetCodec(new AlphabetBuilder()
         .build());
 
 final MultiplicativeInverseIntegerTransformer inverse =
-        new MultiplicativeInverseIntegerTransformer(0x1909719a5ee544adL);
+        new MultiplicativeInverseIntegerTransformer(0x5ee544ad);
 
 final BitRotationIntegerTransformer rotate = new BitRotationIntegerTransformer(22);
-final OffsetIntegerTransformer offset = new OffsetIntegerTransformer(0xe45c2f833b2f0474L);
-final XorIntegerTransformer xor = new XorIntegerTransformer(0xe41c643d0593242L);
-
+final OffsetIntegerTransformer offset = new OffsetIntegerTransformer(0x3b2f0474);
+final XorIntegerTransformer xor = new XorIntegerTransformer(0xd0593242);
 
 final IntegerObfuscationPipeline pipeline =
         new IntegerObfuscationPipeline(codec, inverse, rotate, offset, xor);
 
-System.out.println("| ID | Obfuscated ID  |");
-System.out.println("|----|----------------|");
+System.out.println("| ID | Obfuscated ID |");
+System.out.println("|----|---------------|");
 
 for (int id = 0; id < 10; id++) {
-    System.out.format("| %d  | %-14s |\n", id, pipeline.obfuscate(id));
+    System.out.format("| %d  | %-13s |\n", id, pipeline.obfuscate(id));
     assert id == pipeline.deobfuscate(pipeline.obfuscate(id));
 }
 ```
 
 The example produces the following output:
 
-| ID | Obfuscated ID  |
-|----|----------------|
-| 0  | LWNKM28KZD449J |
-| 1  | VWB2HZQ3CLVPBQ |
-| 2  | XHQ9QD9M7NZYZC |
-| 3  | B7BCPMZB4JFP9X |
-| 4  | 2L3878VCZ3NQXM |
-| 5  | LXZMVQXBFZ3XYT |
-| 6  | VX28X98HFPQ98N |
-| 7  | XV2NQYJNV2349F |
-| 8  | BV2CKWTDBZKFJC |
-| 9  | 29K87FNQLCY9XC |
+| ID | Obfuscated ID |
+|----|---------------|
+| 0  | RZCNV8L       |
+| 1  | 93ZWMWW       |
+| 2  | Z93438Y       |
+| 3  | FLMYVD7       |
+| 4  | VQWMNT2       |
+| 5  | CLM3NN9       |
+| 6  | R44WR9B       |
+| 7  | 9TB44NX       |
+| 8  | ZKD3888       |
+| 9  | BVJXQL8       |
 
 In the above example, there are three major pieces of the puzzle: transformers, codecs, and a pipeline. We'll discuss each in turn.
 
@@ -74,18 +73,18 @@ In the above example, there are three major pieces of the puzzle: transformers, 
 
 The main point of interaction with ID Obfuscator is the `ObfuscationPipeline`. The pipeline combines a number of transformers and exactly one codec into a coherent tool for obfuscating and deobfuscating numbers. The type, number, and configuration of the transformers and the type and configuration codec all control the behavior of the pipeline. As an example, let's change the order of the transformers in the demo above to `offset, rotate, xor, inverse` (i.e. we swap the positions of `offset` and `rotate`). Now the output looks like this:
 
-| ID | Obfuscated ID  |
-|----|----------------|
-| 0  | LCXJYW72K4QPDN |
-| 1  | VC4YV7MKXHXX43 |
-| 2  | FDJNDP4KCFPTF4 |
-| 3  | BF4QWWQTMHY7HC |
-| 4  | 2RYDTDV874Q2RL |
-| 5  | L3CJQTYM3M8D4D |
-| 6  | VXPNPYN3MMMRFV |
-| 7  | FPF77MXDLKCT3Y |
-| 8  | BW8H3J9H7W9V8F |
-| 9  | 2CF4RWFCFYLNCT |
+| ID | Obfuscated ID |
+|----|---------------|
+| 0  | F8C88BC       |
+| 1  | ZRHBHMQ       |
+| 2  | C3VPHKD       |
+| 3  | 43QZY42       |
+| 4  | BDYTNP4       |
+| 5  | RCLW873       |
+| 6  | FQCYMLP       |
+| 7  | ZDHXXV7       |
+| 8  | CTZ7XZV       |
+| 9  | 4TQCNTL       |
 
 This is, obviously, very different from the original output. We could achieve similar output changes by changing the value of the offset passed to the `OffsetIntegerTransformer`, for example, or changing the random seed passed to the codec. This has two very important consequences:
 

@@ -15,11 +15,11 @@ public class BitRotationIntegerTransformer implements IntegerTransformer {
      *
      * @param distance the number of places by which to rotate integers
      */
-    public BitRotationIntegerTransformer(final long distance) {
+    public BitRotationIntegerTransformer(final int distance) {
         this.originalDistance = distance;
 
-        // Normalize the rotation distance to the range of [0, 64).
-        this.effectiveDistance = (int) ((distance % Long.SIZE) + (distance < 0 ? Long.SIZE : 0));
+        // Normalize the rotation distance to the range of [0, 32).
+        this.effectiveDistance = (int) ((distance % Integer.SIZE) + (distance < 0 ? Integer.SIZE : 0));
     }
 
     int getEffectiveDistance() {
@@ -27,15 +27,15 @@ public class BitRotationIntegerTransformer implements IntegerTransformer {
     }
 
     /**
-     * Transforms the given number by rotating its bits to the left by a prescribed distance.
+     * Transforms the given integer by rotating its bits to the left by a prescribed distance.
      *
      * @param i the integer to transform
      *
      * @return the rotated integer
      */
     @Override
-    public long transformInteger(final long i) {
-        return (i << this.effectiveDistance) | (i >>> (Long.SIZE - this.effectiveDistance));
+    public int transformInteger(final int i) {
+        return (i << this.effectiveDistance) | (i >>> (Integer.SIZE - this.effectiveDistance));
     }
 
     /**
@@ -46,8 +46,8 @@ public class BitRotationIntegerTransformer implements IntegerTransformer {
      * @return the original integer
      */
     @Override
-    public long reverseTransformInteger(final long i) {
-        return (i >>> this.effectiveDistance) | (i << (Long.SIZE -this.effectiveDistance));
+    public int reverseTransformInteger(final int i) {
+        return (i >>> this.effectiveDistance) | (i << (Integer.SIZE - this.effectiveDistance));
     }
 
     @Override

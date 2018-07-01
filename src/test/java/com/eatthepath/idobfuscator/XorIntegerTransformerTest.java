@@ -4,7 +4,7 @@ public class XorIntegerTransformerTest extends IntegerTransformerTest {
 
     @Override
     public IntegerTransformer[] getTransformers() {
-        final long[] masks = new long[] { 0, 1, -7, 77, Long.MAX_VALUE, Long.MIN_VALUE };
+        final int[] masks = new int[] { 0, 1, -7, 77, Integer.MAX_VALUE, Integer.MIN_VALUE };
         final IntegerTransformer[] transformers = new IntegerTransformer[masks.length];
 
         for (int i = 0; i < masks.length; i++) {

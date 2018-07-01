@@ -12,26 +12,26 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnitParamsRunner.class)
-public abstract class IntegerTransformerTest {
+public abstract class LongTransformerTest {
 
-    protected abstract IntegerTransformer[] getTransformers();
+    protected abstract LongTransformer[] getTransformers();
 
     @Test
-    @Parameters(method = "getParametersForTransformInteger")
-    public void testTransformReverseTransform(final IntegerTransformer transformer, final int i) {
-        assertEquals(i, transformer.reverseTransformInteger(transformer.transformInteger(i)));
+    @Parameters(method = "getParametersForTransformLong")
+    public void testTransformReverseTransform(final LongTransformer transformer, final long l) {
+        assertEquals(l, transformer.reverseTransformLong(transformer.transformLong(l)));
     }
 
     @SuppressWarnings("unused")
-    private List<List<?>> getParametersForTransformInteger() {
+    private List<List<?>> getParametersForTransformLong() {
         final List<List<?>> parameters = new ArrayList<>();
 
-        for (final IntegerTransformer transformer : this.getTransformers()) {
+        for (final LongTransformer transformer : this.getTransformers()) {
             parameters.add(Arrays.asList(transformer, 0));
             parameters.add(Arrays.asList(transformer, 1));
             parameters.add(Arrays.asList(transformer, -1));
-            parameters.add(Arrays.asList(transformer, Integer.MAX_VALUE));
-            parameters.add(Arrays.asList(transformer, Integer.MIN_VALUE));
+            parameters.add(Arrays.asList(transformer, Long.MAX_VALUE));
+            parameters.add(Arrays.asList(transformer, Long.MIN_VALUE));
         }
 
         return parameters;

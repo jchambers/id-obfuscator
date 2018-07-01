@@ -1,13 +1,8 @@
 package com.eatthepath.idobfuscator;
 
-/**
- * Transforms integers by adding a given offset, and reverses transformations by subtracting that offset.
- *
- * @author <a href="https://github.com/jchambers">Jon Chambers</a>
- */
-public class OffsetIntegerTransformer implements IntegerTransformer {
+public class OffsetLongTransformer implements LongTransformer {
 
-    private final int offset;
+    private final long offset;
 
     /**
      * Constructs a new offset transformer with the given offset. Offsets should be non-zero (otherwise the
@@ -15,7 +10,7 @@ public class OffsetIntegerTransformer implements IntegerTransformer {
      *
      * @param offset the offset to apply when transforming numbers
      */
-    public OffsetIntegerTransformer(final int offset) {
+    public OffsetLongTransformer(final long offset) {
         this.offset = offset;
     }
 
@@ -27,7 +22,7 @@ public class OffsetIntegerTransformer implements IntegerTransformer {
      * @return the transformed integer
      */
     @Override
-    public int transformInteger(final int i) {
+    public long transformLong(final long i) {
         return i + this.offset;
     }
 
@@ -39,12 +34,12 @@ public class OffsetIntegerTransformer implements IntegerTransformer {
      * @return the original integer
      */
     @Override
-    public int reverseTransformInteger(final int i) {
+    public long reverseTransformLong(final long i) {
         return i - this.offset;
     }
 
     @Override
     public String toString() {
-        return String.format("OffsetIntegerTransformer [offset=%d]", this.offset);
+        return String.format("OffsetLongTransformer [offset=%d]", this.offset);
     }
 }

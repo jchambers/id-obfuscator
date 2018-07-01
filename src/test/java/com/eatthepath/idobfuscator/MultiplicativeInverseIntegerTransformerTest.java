@@ -21,7 +21,7 @@ public class MultiplicativeInverseIntegerTransformerTest extends IntegerTransfor
 
     @Override
     public IntegerTransformer[] getTransformers() {
-        final long[] multipliers = new long[] { 77, Integer.MAX_VALUE };
+        final int[] multipliers = new int[] { 77, Integer.MAX_VALUE };
         final IntegerTransformer[] transformers = new MultiplicativeInverseIntegerTransformer[multipliers.length];
 
         for (int i = 0; i < multipliers.length; i++) {

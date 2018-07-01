@@ -1,13 +1,30 @@
 package com.eatthepath.idobfuscator;
 
-import org.junit.Test;
 import com.eatthepath.idobfuscator.util.AlphabetBuilder;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class AlphabetCodecTest extends IntegerCodecTest {
+import static org.junit.Assert.assertEquals;
 
-    @Override
-    protected IntegerCodec[] getCodecs() {
-        return new AlphabetCodec[] {  new AlphabetCodec(new AlphabetBuilder().includeLowercaseLatinLetters().build()) };
+@RunWith(JUnitParamsRunner.class)
+public class AlphabetCodecTest {
+
+    @Test
+    @Parameters({ "0", "1", "-1", "2147483647", "-2147483648"})
+    public void testEncodeDecodeInteger(final int i) {
+        final AlphabetCodec codec = new AlphabetCodec(new AlphabetBuilder().includeLowercaseLatinLetters().build());
+
+        assertEquals(i, codec.decodeStringAsInteger(codec.encodeIntegerAsString(i)));
+    }
+
+    @Test
+    @Parameters({ "0", "1", "-1", "9223372036854775807", "-9223372036854775808"})
+    public void testEncodeDecodeLong(final long l) {
+        final AlphabetCodec codec = new AlphabetCodec(new AlphabetBuilder().includeLowercaseLatinLetters().build());
+
+        assertEquals(l, codec.decodeStringAsLong(codec.encodeLongAsString(l)));
     }
 
     @Test(expected = NullPointerException.class)
@@ -32,7 +49,7 @@ public class AlphabetCodecTest extends IntegerCodecTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDecodeUnexpectedCharacter() {
-        new AlphabetCodec('a', 'b', 'c', 'd').decodeStringAsInteger("x");
+        new AlphabetCodec('a', 'b', 'c', 'd').decodeStringAsLong("x");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -43,7 +60,7 @@ public class AlphabetCodecTest extends IntegerCodecTest {
                 .includeAdditionalCharacters(' ', ',', '.')
                 .build();
 
-        new AlphabetCodec(alphabet).decodeStringAsInteger(
+        new AlphabetCodec(alphabet).decodeStringAsLong(
                 "Even though this string contains legal characters, it is too long to represent a valid integer.");
     }
 }

@@ -8,15 +8,15 @@ public class BitRotationIntegerTransformerTest extends IntegerTransformerTest {
 
     @Test
     public void testBitRotationIntegerTransformer() {
-        for (int i = 0; i < Long.SIZE - 1; i++) {
+        for (int i = 0; i < Integer.SIZE - 1; i++) {
             assertEquals(i, new BitRotationIntegerTransformer(i).getEffectiveDistance());
         }
 
-        for (int i = -1; i > -Long.SIZE; i--) {
-            assertEquals(i + Long.SIZE, new BitRotationIntegerTransformer(i).getEffectiveDistance());
+        for (int i = -1; i > -Integer.SIZE; i--) {
+            assertEquals(i + Integer.SIZE, new BitRotationIntegerTransformer(i).getEffectiveDistance());
         }
 
-        assertEquals(3, new BitRotationIntegerTransformer(Long.SIZE + 3).getEffectiveDistance());
+        assertEquals(3, new BitRotationIntegerTransformer(Integer.SIZE + 3).getEffectiveDistance());
     }
 
     @Override
@@ -25,6 +25,7 @@ public class BitRotationIntegerTransformerTest extends IntegerTransformerTest {
                 new BitRotationIntegerTransformer(17),
                 new BitRotationIntegerTransformer(-17),
                 new BitRotationIntegerTransformer(0),
+                new BitRotationIntegerTransformer(31),
                 new BitRotationIntegerTransformer(32),
                 new BitRotationIntegerTransformer(65)
         };

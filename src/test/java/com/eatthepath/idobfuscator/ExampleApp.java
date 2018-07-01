@@ -14,21 +14,20 @@ public class ExampleApp {
                 .build());
 
         final MultiplicativeInverseIntegerTransformer inverse =
-                new MultiplicativeInverseIntegerTransformer(0x1909719a5ee544adL);
+                new MultiplicativeInverseIntegerTransformer(0x5ee544ad);
 
         final BitRotationIntegerTransformer rotate = new BitRotationIntegerTransformer(22);
-        final OffsetIntegerTransformer offset = new OffsetIntegerTransformer(0xe45c2f833b2f0474L);
-        final XorIntegerTransformer xor = new XorIntegerTransformer(0xe41c643d0593242L);
-
+        final OffsetIntegerTransformer offset = new OffsetIntegerTransformer(0x3b2f0474);
+        final XorIntegerTransformer xor = new XorIntegerTransformer(0xd0593242);
 
         final IntegerObfuscationPipeline pipeline =
                 new IntegerObfuscationPipeline(codec, inverse, rotate, offset, xor);
 
-        System.out.println("| ID | Obfuscated ID  |");
-        System.out.println("|----|----------------|");
+        System.out.println("| ID | Obfuscated ID |");
+        System.out.println("|----|---------------|");
 
         for (int id = 0; id < 10; id++) {
-            System.out.format("| %d  | %-14s |\n", id, pipeline.obfuscate(id));
+            System.out.format("| %d  | %-13s |\n", id, pipeline.obfuscate(id));
             assert id == pipeline.deobfuscate(pipeline.obfuscate(id));
         }
     }

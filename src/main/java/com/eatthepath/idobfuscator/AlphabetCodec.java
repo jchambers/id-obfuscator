@@ -13,13 +13,14 @@ import java.util.Objects;
  *
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
-public class AlphabetCodec implements IntegerCodec {
+public class AlphabetCodec implements IntegerCodec, LongCodec {
 
     private final char[] alphabet;
 
     private final transient int[] characterValues;
 
-    private final transient int maximumStringLength;
+    private final transient int maximumStringLengthForInt;
+    private final transient int maximumStringLengthForLong;
     private final transient long[] placeValues;
 
     /**
@@ -74,9 +75,10 @@ public class AlphabetCodec implements IntegerCodec {
         // string needed to represent any integer value with the given alphabet. With that, we can both perform some
         // low-cost error-checking when we try to decode strings and also pre-calculate place values to avoid repeating
         // work when decoding.
-        this.maximumStringLength = (int) Math.ceil(Math.log(Math.pow(2, Long.SIZE)) / Math.log(this.alphabet.length));
+        this.maximumStringLengthForInt = (int) Math.ceil(Math.log(Math.pow(2, Integer.SIZE)) / Math.log(this.alphabet.length));
+        this.maximumStringLengthForLong = (int) Math.ceil(Math.log(Math.pow(2, Long.SIZE)) / Math.log(this.alphabet.length));
 
-        this.placeValues = new long[this.maximumStringLength];
+        this.placeValues = new long[this.maximumStringLengthForLong];
         this.placeValues[0] = 1;
 
         for (int i = 1; i < this.placeValues.length; i++) {
@@ -84,20 +86,34 @@ public class AlphabetCodec implements IntegerCodec {
         }
     }
 
+    @Override
+    public String encodeIntegerAsString(final int i) {
+        long workingCopy = i & 0xffffffffL;
+
+        final char[] encodedCharacters = new char[this.maximumStringLengthForInt];
+
+        for (int j = encodedCharacters.length - 1; j >= 0; j--) {
+            encodedCharacters[j] = this.alphabet[(int) (workingCopy % this.alphabet.length)];
+            workingCopy /= this.alphabet.length;
+        }
+
+        return new String(encodedCharacters);
+    }
+
     /**
      * Encodes the given integer as a string using this codec's alphabet.
      *
-     * @param i the integer to encode
+     * @param l the integer to encode
      *
      * @return a string representation of the given integer
      *
      * @throws IllegalArgumentException if the given integer cannot be expressed with {@code nBits} bits
      */
     @Override
-    public String encodeIntegerAsString(final long i) {
-        long workingCopy = i;
+    public String encodeLongAsString(final long l) {
+        long workingCopy = l;
 
-        final char[] encodedCharacters = new char[this.maximumStringLength];
+        final char[] encodedCharacters = new char[this.maximumStringLengthForLong];
 
         for (int j = encodedCharacters.length - 1; j >= 0; j--) {
             encodedCharacters[j] = this.alphabet[(int) Long.remainderUnsigned(workingCopy, this.alphabet.length)];
@@ -105,6 +121,15 @@ public class AlphabetCodec implements IntegerCodec {
         }
 
         return new String(encodedCharacters);
+    }
+
+    @Override
+    public int decodeStringAsInteger(final String string) {
+        final long decoded = this.decodeStringAsLong(string, this.maximumStringLengthForInt);
+
+        assert (decoded & 0xffffffff00000000L) == 0;
+
+        return (int) decoded;
     }
 
     /**
@@ -118,10 +143,14 @@ public class AlphabetCodec implements IntegerCodec {
      * alphabet, or if the given string contains characters not in this codec's alphabet
      */
     @Override
-    public long decodeStringAsInteger(final String string) {
-        if (string.length() > this.maximumStringLength) {
+    public long decodeStringAsLong(final String string) {
+        return this.decodeStringAsLong(string, this.maximumStringLengthForLong);
+    }
+
+    private long decodeStringAsLong(final String string, final int maximumStringLength) {
+        if (string.length() > maximumStringLength) {
             throw new IllegalArgumentException(
-                    String.format("String \"%s\" is too long to represent a valid 64-bit integer in this codec's alphabet.", string));
+                    String.format("String \"%s\" is too long to represent a valid integer in this codec's alphabet.", string));
         }
 
         final char[] chars = string.toCharArray();
