@@ -9,16 +9,14 @@ public class IdObfuscator {
     private final long longMultiplier;
     private final long longInverse;
 
-    private final Codec codec;
+    private final Base58Codec codec = new Base58Codec();
 
-    public IdObfuscator(final long secretMultiplier, final Codec codec) {
+    public IdObfuscator(final long secretMultiplier) {
         this.integerMultiplier = (int) (secretMultiplier | 0x01);
         this.integerInverse = BigInteger.valueOf(this.integerMultiplier).modInverse(BigInteger.ONE.shiftLeft(Integer.SIZE)).intValue();
 
         this.longMultiplier = secretMultiplier | 0x01;
         this.longInverse = BigInteger.valueOf(this.longMultiplier).modInverse(BigInteger.valueOf(1).shiftLeft(64)).longValue();
-
-        this.codec = codec;
     }
 
     public String obfuscateInteger(final int i) {

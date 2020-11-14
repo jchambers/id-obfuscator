@@ -2,7 +2,7 @@ package com.eatthepath.idobfuscator;
 
 import java.util.Arrays;
 
-public class Base58Codec implements Codec {
+class Base58Codec {
 
     private static final char[] ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".toCharArray();
     private static final int[] PLACE_VALUES = new int['z' + 1];
@@ -15,7 +15,6 @@ public class Base58Codec implements Codec {
         }
     }
 
-    @Override
     public String encodeInteger(final int i) {
         final byte[] intBytes = new byte[4];
 
@@ -27,7 +26,6 @@ public class Base58Codec implements Codec {
         return encode(intBytes);
     }
 
-    @Override
     public String encodeLong(long l) {
         final byte[] longBytes = new byte[8];
 
@@ -95,12 +93,10 @@ public class Base58Codec implements Codec {
         return stringBuilder.toString();
     }
 
-    @Override
     public int decodeInteger(final String encodedInteger) {
         return (int) decode(encodedInteger);
     }
 
-    @Override
     public long decodeLong(final String encodedLong) {
         return decode(encodedLong);
     }

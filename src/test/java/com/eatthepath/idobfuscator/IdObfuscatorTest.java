@@ -11,33 +11,10 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class IdObfuscatorTest {
 
-    private static final Codec CODEC = new Codec() {
-
-        @Override
-        public String encodeInteger(final int i) {
-            return String.valueOf(i);
-        }
-
-        @Override
-        public String encodeLong(final long l) {
-            return String.valueOf(l);
-        }
-
-        @Override
-        public int decodeInteger(final String encodedInteger) {
-            return Integer.parseInt(encodedInteger);
-        }
-
-        @Override
-        public long decodeLong(final String encodedLong) {
-            return Long.parseLong(encodedLong);
-        }
-    };
-
     @ParameterizedTest
     @MethodSource("argumentsForObfuscateDeobfuscateInteger")
     public void obfuscateDeobfuscateInteger(final long secret, final int i) {
-        final IdObfuscator idObfuscator = new IdObfuscator(secret, CODEC);
+        final IdObfuscator idObfuscator = new IdObfuscator(secret);
         assertEquals(i, idObfuscator.deobfuscateInteger(idObfuscator.obfuscateInteger(i)));
     }
 
@@ -84,7 +61,7 @@ public class IdObfuscatorTest {
     @ParameterizedTest
     @MethodSource("argumentsForObfuscateDeobfuscateLong")
     public void obfuscateDeobfuscateLong(final long secret, final long l) {
-        final IdObfuscator idObfuscator = new IdObfuscator(secret, CODEC);
+        final IdObfuscator idObfuscator = new IdObfuscator(secret);
         assertEquals(l, idObfuscator.deobfuscateLong(idObfuscator.obfuscateLong(l)));
     }
 
