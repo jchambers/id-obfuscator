@@ -1,16 +1,15 @@
 package com.eatthepath.idobfuscator;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.Assert.assertEquals;
+import java.util.stream.Stream;
 
-@RunWith(JUnitParamsRunner.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
 public class IdObfuscatorTest {
-
-    private IdObfuscator obfuscator;
 
     private static final Codec CODEC = new Codec() {
 
@@ -35,97 +34,97 @@ public class IdObfuscatorTest {
         }
     };
 
-    @Test
-    @Parameters(method = "argumentsForObfuscateDeobfuscateInteger")
+    @ParameterizedTest
+    @MethodSource("argumentsForObfuscateDeobfuscateInteger")
     public void obfuscateDeobfuscateInteger(final long secret, final int i) {
         final IdObfuscator idObfuscator = new IdObfuscator(secret, CODEC);
         assertEquals(i, idObfuscator.deobfuscateInteger(idObfuscator.obfuscateInteger(i)));
     }
 
-    private static Object argumentsForObfuscateDeobfuscateInteger() {
-        return new Object[] {
-                new Object[] { -4783489325329572L, 0 },
-                new Object[] { -4783489325329572L, 1 },
-                new Object[] { -4783489325329572L, -1 },
-                new Object[] { -4783489325329572L, 77 },
-                new Object[] { -4783489325329572L, -77 },
-                new Object[] { -4783489325329572L, Integer.MAX_VALUE },
-                new Object[] { -4783489325329572L, Integer.MIN_VALUE },
-                new Object[] { 4783489325329572L, 0 },
-                new Object[] { 4783489325329572L, 1 },
-                new Object[] { 4783489325329572L, -1 },
-                new Object[] { 4783489325329572L, 77 },
-                new Object[] { 4783489325329572L, -77 },
-                new Object[] { 4783489325329572L, Integer.MAX_VALUE },
-                new Object[] { 4783489325329572L, Integer.MIN_VALUE },
-                new Object[] { 0L, 0 },
-                new Object[] { 0L, 1 },
-                new Object[] { 0L, -1 },
-                new Object[] { 0L, 77 },
-                new Object[] { 0L, -77 },
-                new Object[] { 0L, Integer.MAX_VALUE },
-                new Object[] { 0L, Integer.MIN_VALUE },
-                new Object[] { Long.MAX_VALUE, 0 },
-                new Object[] { Long.MAX_VALUE, 1 },
-                new Object[] { Long.MAX_VALUE, -1 },
-                new Object[] { Long.MAX_VALUE, 77 },
-                new Object[] { Long.MAX_VALUE, -77 },
-                new Object[] { Long.MAX_VALUE, Integer.MAX_VALUE },
-                new Object[] { Long.MAX_VALUE, Integer.MIN_VALUE },
-                new Object[] { Long.MIN_VALUE, 0 },
-                new Object[] { Long.MIN_VALUE, 1 },
-                new Object[] { Long.MIN_VALUE, -1 },
-                new Object[] { Long.MIN_VALUE, 77 },
-                new Object[] { Long.MIN_VALUE, -77 },
-                new Object[] { Long.MIN_VALUE, Integer.MAX_VALUE },
-                new Object[] { Long.MIN_VALUE, Integer.MIN_VALUE }
-        };
+    private static Stream<Arguments> argumentsForObfuscateDeobfuscateInteger() {
+        return Stream.of(
+                arguments(-4783489325329572L, 0),
+                arguments(-4783489325329572L, 1),
+                arguments(-4783489325329572L, -1),
+                arguments(-4783489325329572L, 77),
+                arguments(-4783489325329572L, -77),
+                arguments(-4783489325329572L, Integer.MAX_VALUE),
+                arguments(-4783489325329572L, Integer.MIN_VALUE),
+                arguments(4783489325329572L, 0),
+                arguments(4783489325329572L, 1),
+                arguments(4783489325329572L, -1),
+                arguments(4783489325329572L, 77),
+                arguments(4783489325329572L, -77),
+                arguments(4783489325329572L, Integer.MAX_VALUE),
+                arguments(4783489325329572L, Integer.MIN_VALUE),
+                arguments(0L, 0),
+                arguments(0L, 1),
+                arguments(0L, -1),
+                arguments(0L, 77),
+                arguments(0L, -77),
+                arguments(0L, Integer.MAX_VALUE),
+                arguments(0L, Integer.MIN_VALUE),
+                arguments(Long.MAX_VALUE, 0),
+                arguments(Long.MAX_VALUE, 1),
+                arguments(Long.MAX_VALUE, -1),
+                arguments(Long.MAX_VALUE, 77),
+                arguments(Long.MAX_VALUE, -77),
+                arguments(Long.MAX_VALUE, Integer.MAX_VALUE),
+                arguments(Long.MAX_VALUE, Integer.MIN_VALUE),
+                arguments(Long.MIN_VALUE, 0),
+                arguments(Long.MIN_VALUE, 1),
+                arguments(Long.MIN_VALUE, -1),
+                arguments(Long.MIN_VALUE, 77),
+                arguments(Long.MIN_VALUE, -77),
+                arguments(Long.MIN_VALUE, Integer.MAX_VALUE),
+                arguments(Long.MIN_VALUE, Integer.MIN_VALUE)
+        );
     }
 
-    @Test
-    @Parameters(method = "argumentsForObfuscateDeobfuscateLong")
+    @ParameterizedTest
+    @MethodSource("argumentsForObfuscateDeobfuscateLong")
     public void obfuscateDeobfuscateLong(final long secret, final long l) {
         final IdObfuscator idObfuscator = new IdObfuscator(secret, CODEC);
         assertEquals(l, idObfuscator.deobfuscateLong(idObfuscator.obfuscateLong(l)));
     }
 
-    private static Object argumentsForObfuscateDeobfuscateLong() {
-        return new Object[] {
-                new Object[] { -4783489325329572L, 0 },
-                new Object[] { -4783489325329572L, 1 },
-                new Object[] { -4783489325329572L, -1 },
-                new Object[] { -4783489325329572L, 77 },
-                new Object[] { -4783489325329572L, -77 },
-                new Object[] { -4783489325329572L, Long.MAX_VALUE },
-                new Object[] { -4783489325329572L, Long.MIN_VALUE },
-                new Object[] { 4783489325329572L, 0 },
-                new Object[] { 4783489325329572L, 1 },
-                new Object[] { 4783489325329572L, -1 },
-                new Object[] { 4783489325329572L, 77 },
-                new Object[] { 4783489325329572L, -77 },
-                new Object[] { 4783489325329572L, Long.MAX_VALUE },
-                new Object[] { 4783489325329572L, Long.MIN_VALUE },
-                new Object[] { 0L, 0 },
-                new Object[] { 0L, 1 },
-                new Object[] { 0L, -1 },
-                new Object[] { 0L, 77 },
-                new Object[] { 0L, -77 },
-                new Object[] { 0L, Long.MAX_VALUE },
-                new Object[] { 0L, Long.MIN_VALUE },
-                new Object[] { Long.MAX_VALUE, 0 },
-                new Object[] { Long.MAX_VALUE, 1 },
-                new Object[] { Long.MAX_VALUE, -1 },
-                new Object[] { Long.MAX_VALUE, 77 },
-                new Object[] { Long.MAX_VALUE, -77 },
-                new Object[] { Long.MAX_VALUE, Long.MAX_VALUE },
-                new Object[] { Long.MAX_VALUE, Long.MIN_VALUE },
-                new Object[] { Long.MIN_VALUE, 0 },
-                new Object[] { Long.MIN_VALUE, 1 },
-                new Object[] { Long.MIN_VALUE, -1 },
-                new Object[] { Long.MIN_VALUE, 77 },
-                new Object[] { Long.MIN_VALUE, -77 },
-                new Object[] { Long.MIN_VALUE, Long.MAX_VALUE },
-                new Object[] { Long.MIN_VALUE, Long.MIN_VALUE }
-        };
+    private static Stream<Arguments> argumentsForObfuscateDeobfuscateLong() {
+        return Stream.of(
+                arguments(-4783489325329572L, 0),
+                arguments(-4783489325329572L, 1),
+                arguments(-4783489325329572L, -1),
+                arguments(-4783489325329572L, 77),
+                arguments(-4783489325329572L, -77),
+                arguments(-4783489325329572L, Long.MAX_VALUE),
+                arguments(-4783489325329572L, Long.MIN_VALUE),
+                arguments(4783489325329572L, 0),
+                arguments(4783489325329572L, 1),
+                arguments(4783489325329572L, -1),
+                arguments(4783489325329572L, 77),
+                arguments(4783489325329572L, -77),
+                arguments(4783489325329572L, Long.MAX_VALUE),
+                arguments(4783489325329572L, Long.MIN_VALUE),
+                arguments(0L, 0),
+                arguments(0L, 1),
+                arguments(0L, -1),
+                arguments(0L, 77),
+                arguments(0L, -77),
+                arguments(0L, Long.MAX_VALUE),
+                arguments(0L, Long.MIN_VALUE),
+                arguments(Long.MAX_VALUE, 0),
+                arguments(Long.MAX_VALUE, 1),
+                arguments(Long.MAX_VALUE, -1),
+                arguments(Long.MAX_VALUE, 77),
+                arguments(Long.MAX_VALUE, -77),
+                arguments(Long.MAX_VALUE, Long.MAX_VALUE),
+                arguments(Long.MAX_VALUE, Long.MIN_VALUE),
+                arguments(Long.MIN_VALUE, 0),
+                arguments(Long.MIN_VALUE, 1),
+                arguments(Long.MIN_VALUE, -1),
+                arguments(Long.MIN_VALUE, 77),
+                arguments(Long.MIN_VALUE, -77),
+                arguments(Long.MIN_VALUE, Long.MAX_VALUE),
+                arguments(Long.MIN_VALUE, Long.MIN_VALUE)
+        );
     }
 }

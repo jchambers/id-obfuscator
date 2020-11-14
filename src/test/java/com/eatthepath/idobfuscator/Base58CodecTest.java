@@ -1,21 +1,36 @@
 package com.eatthepath.idobfuscator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Base58CodecTest {
 
-    @Test
-    public void testEncodeLong() {
-        assertEquals("1111233QC4", new Base58Codec().encodeLong(0x00000000287fb4cd));
+    @ParameterizedTest
+    @MethodSource("argumentsForTestEncodeDecodeLong")
+    void testEncodeDecodeLong(final long l) {
+        final Base58Codec base58Codec = new Base58Codec();
+        assertEquals(l, base58Codec.decodeLong(base58Codec.encodeLong(l)));
     }
 
-    @Test
-    public void testDecodeLong() {
-        assertEquals(0x00000000287fb4cd, new Base58Codec().decodeLong("11233QC4"));
+    private static Stream<Long> argumentsForTestEncodeDecodeLong() {
+        return Stream.of(Long.MIN_VALUE, Long.MAX_VALUE, 0L, 1L, -1L, 238947L, -1287352389740L);
+    }
+
+    @ParameterizedTest
+    @MethodSource("argumentsForTestEncodeDecodeInt")
+    void testEncodeDecodeInt(final int i) {
+        final Base58Codec base58Codec = new Base58Codec();
+        assertEquals(i, base58Codec.decodeInteger(base58Codec.encodeLong(i)));
+    }
+
+    private static Stream<Integer> argumentsForTestEncodeDecodeInt() {
+        return Stream.of(Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 1, -1, 238947, -1287352389);
     }
 
     @Test
